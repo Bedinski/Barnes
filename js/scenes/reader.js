@@ -11,10 +11,8 @@ import { buildScene } from '../characters/sceneArt.js';
 import { buildKoala } from '../characters/koala.js';
 import { attach as animate } from '../characters/animator.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';
-import { speak, cancelSpeech, isSpeechAvailable } from '../audio/speech.js';
+import { speak, cancelSpeech } from '../audio/speech.js';
 import { success, tryAgain, tap as tapSound } from '../audio/sounds.js';
-
-const WORD_HIGHLIGHT_MS = 360; // fallback pacing if onboundary isn't fired
 
 function markBookComplete(bookId) {
   try {
@@ -55,62 +53,21 @@ function renderWordRun(text) {
 }
 
 function readAloud(text, wordSpans) {
-  // Use the native boundary event when available; otherwise time-highlight
-  // each word sequentially at WORD_HIGHLIGHT_MS pacing.
+  // Delegate to the shared speak() helper so the reader uses the SAME voice
+  // as every other mode (Samantha / Karen / Google US English / etc.)
+  // instead of the OS default — which on many Linux setups is the robotic
+  // espeak voice. The wordSpans are highlighted via the onBoundary callback
+  // which speech.js synthesises from native boundary events when available
+  // and from a timed fallback otherwise.
   const clearAll = () => wordSpans.forEach((s) => s.classList.remove('is-highlight'));
   clearAll();
-
-  const utter = isSpeechAvailable()
-    ? new globalThis.SpeechSynthesisUtterance(text)
-    : null;
-
-  let timedFallbackTimer = null;
-  const startTimedFallback = () => {
-    let i = 0;
-    const tick = () => {
+  const cancel = speak(text, {
+    onBoundary(idx) {
       clearAll();
-      if (i < wordSpans.length) {
-        wordSpans[i].classList.add('is-highlight');
-        i++;
-        timedFallbackTimer = setTimeout(tick, WORD_HIGHLIGHT_MS);
-      }
-    };
-    tick();
-  };
-
-  if (utter) {
-    utter.rate = 0.85;
-    utter.pitch = 1.2;
-    let usedBoundary = false;
-    let idx = 0;
-    utter.onboundary = (e) => {
-      if (e && e.name === 'word') {
-        usedBoundary = true;
-        clearAll();
-        if (wordSpans[idx]) wordSpans[idx].classList.add('is-highlight');
-        idx++;
-      }
-    };
-    utter.onstart = () => {
-      // If no boundary event arrives in 400ms, fall back to timed highlighting.
-      setTimeout(() => { if (!usedBoundary) startTimedFallback(); }, 400);
-    };
-    utter.onend = () => {
-      if (timedFallbackTimer) clearTimeout(timedFallbackTimer);
-      clearAll();
-    };
-    utter.onerror = () => { clearAll(); };
-    try { globalThis.speechSynthesis.cancel(); } catch (_) { /* noop */ }
-    globalThis.speechSynthesis.speak(utter);
-  } else {
-    startTimedFallback();
-  }
-
-  return () => {
-    if (timedFallbackTimer) clearTimeout(timedFallbackTimer);
-    cancelSpeech();
-    clearAll();
-  };
+      if (wordSpans[idx]) wordSpans[idx].classList.add('is-highlight');
+    },
+  });
+  return () => { cancel(); clearAll(); };
 }
 
 export function mount(container, ctx, data = {}) {
