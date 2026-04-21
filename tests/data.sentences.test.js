@@ -42,3 +42,24 @@ test('tokenize() drops period and splits on whitespace', () => {
 test('there are enough scenes that wordPicture has distractors', () => {
   assert.ok(listScenes().length >= 6);
 });
+
+test('no two sentences share the same word multiset (buildSentence determinism)', () => {
+  // buildSentence scene identifies the target by matching the tile multiset;
+  // if two sentences had identical multisets, the test — and the game logic —
+  // could incorrectly accept a wrong arrangement. Guard against that here.
+  const seen = new Map();
+  for (const s of SENTENCES) {
+    const key = tokenize(s.text).map((w) => w.toLowerCase()).sort().join(' ');
+    if (seen.has(key)) {
+      assert.fail(`duplicate word multiset between "${seen.get(key)}" and "${s.text}"`);
+    }
+    seen.set(key, s.text);
+  }
+});
+
+test('every sceneId in SENTENCES is also in sceneArt listScenes()', () => {
+  const all = new Set(listScenes());
+  for (const s of SENTENCES) {
+    assert.ok(all.has(s.sceneId), `missing scene ${s.sceneId}`);
+  }
+});

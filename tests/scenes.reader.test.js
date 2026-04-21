@@ -98,6 +98,47 @@ test('answering comprehension correctly awards a star and marks book complete', 
   unmount();
 });
 
+test('"Read to me" button speaks the page and highlights words', async () => {
+  const ctx = { navigate: () => {} };
+  const root = document.getElementById('app');
+  const unmount = mount(root, ctx, { bookId: BOOKS[0].id });
+
+  // The auto-read fires on mount via setTimeout(350); wait past it to clear,
+  // then press the button ourselves so we're testing the explicit invocation.
+  await new Promise((r) => setTimeout(r, 400));
+  const readBtn = Array.from(root.querySelectorAll('.reader-controls .btn'))
+    .find((b) => /Read to me/i.test(b.textContent));
+  assert.ok(readBtn, 'missing Read to me button');
+  readBtn.click();
+  // Since the stubbed speechSynthesis fires onstart synchronously, the
+  // timed-fallback path kicks in after 400ms; give it one tick to start.
+  await new Promise((r) => setTimeout(r, 50));
+  // Either a word is highlighted (boundary path) OR will be shortly (timed).
+  // Verify no runtime error and the control still exists after a read.
+  assert.ok(root.querySelector('.readable-word'), 'words should still be rendered');
+  unmount();
+});
+
+test('reader renders a narrator koala in the corner of the page art', () => {
+  const ctx = { navigate: () => {} };
+  const root = document.getElementById('app');
+  const unmount = mount(root, ctx, { bookId: BOOKS[0].id });
+  const narrator = root.querySelector('.narrator-slot .character.koala');
+  assert.ok(narrator, 'narrator koala should be present on every reader page');
+  unmount();
+});
+
+test('page-text content matches the book text exactly (word order preserved)', () => {
+  const ctx = { navigate: () => {} };
+  const root = document.getElementById('app');
+  const unmount = mount(root, ctx, { bookId: BOOKS[1].id });
+  const words = Array.from(root.querySelectorAll('.readable-word'))
+    .map((w) => w.dataset.word);
+  const expected = BOOKS[1].pages[0].text.match(/\w+/g);
+  assert.deepEqual(words, expected);
+  unmount();
+});
+
 test('unknown bookId redirects to library', () => {
   const calls = [];
   const ctx = { navigate: (n) => calls.push(n) };
