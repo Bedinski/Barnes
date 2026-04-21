@@ -5,7 +5,7 @@
   "description": "Kindergarten reading game with cute koalas and pandas. Pure static site; jsdom is dev-only for tests.",
   "type": "module",
   "scripts": {
-    "test": "node --test --test-reporter=spec 'tests/**/*.test.js'",
+    "test": "node --test --test-reporter=spec tests/*.test.js",
     "serve": "python3 -m http.server 8000"
   },
   "devDependencies": {
