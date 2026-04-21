@@ -407,6 +407,157 @@ body::before {
 .character.is-talking .mouth-closed { display: none; }
 .character:not(.is-talking) .mouth-open { display: none; }
 
+/* ===================== LIBRARY ===================== */
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  padding: 12px;
+  flex: 1;
+  align-content: start;
+  overflow-y: auto;
+}
+
+.book-card {
+  position: relative;
+  background: var(--c-card);
+  border: 6px solid var(--c-card-edge);
+  border-radius: 28px;
+  padding: 18px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 8px 0 var(--c-shadow);
+  transition: transform .12s ease, box-shadow .12s ease;
+  min-height: 280px;
+}
+.book-card:hover  { transform: translateY(-4px); }
+.book-card:active { transform: translateY(4px); box-shadow: 0 4px 0 var(--c-shadow); }
+.book-card .book-title {
+  font-size: clamp(20px, 2.8vw, 26px);
+  font-weight: bold;
+  text-align: center;
+  padding: 6px 10px;
+  background: #fff;
+  border: 3px dashed var(--c-card-edge);
+  border-radius: 12px;
+  width: 100%;
+}
+.book-card .level-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #fff;
+  border: 3px solid var(--c-card-edge);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 18px;
+  font-weight: bold;
+}
+.book-card .read-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--c-correct);
+  color: #fff;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.mode-card--primary {
+  border-color: #e67e22;
+  background: linear-gradient(180deg, #fff3d6 0%, #ffe2a1 100%);
+  box-shadow: 0 10px 0 var(--c-shadow);
+  min-height: 320px;
+}
+
+/* ===================== READER ===================== */
+
+.scene.reader .book-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.scene.reader .page-indicator {
+  font-size: 18px;
+  color: #667;
+  background: #fff8e7;
+  border: 2px solid var(--c-card-edge);
+  border-radius: 999px;
+  padding: 4px 14px;
+}
+
+.scene.reader .book-art {
+  position: relative;
+  max-width: 720px;
+  width: 100%;
+  min-height: 260px;
+  cursor: default;
+}
+.scene.reader .book-art:active { transform: none; }
+
+.scene.reader .narrator-slot {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  width: 90px;
+  pointer-events: none;
+}
+.scene.reader .narrator-slot .character { width: 100%; }
+
+.scene.reader .page-text {
+  font-size: clamp(28px, 4.5vw, 40px);
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.4;
+  background: #fff;
+  border: 4px dashed var(--c-card-edge);
+  border-radius: 18px;
+  padding: 14px 20px;
+  max-width: 900px;
+  width: 100%;
+  margin: 0;
+  color: var(--c-text);
+}
+
+.readable-word {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .12s ease, transform .12s ease;
+}
+.readable-word:hover { background: #fff3d6; }
+.readable-word:active { transform: translateY(1px); }
+.readable-word.is-highlight {
+  background: var(--c-sun);
+  box-shadow: 0 0 0 3px var(--c-card-edge) inset;
+  transform: translateY(-2px);
+}
+
+.reader-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  flex-wrap: wrap;
+}
+.reader-controls .btn:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
 /* ===================== STAR REWARD ===================== */
 .fly-star {
   position: fixed;

@@ -1,6 +1,5 @@
-// Home screen: pick a game mode. Each card has a live mascot that
-// breathes, blinks, and tracks the cursor — so the screen feels lived-in
-// the moment it loads.
+// Home screen — primary focus is Books; two practice modes reinforce
+// the same vocabulary the child sees while reading.
 
 import { buildKoala } from '../characters/koala.js';
 import { buildPanda } from '../characters/panda.js';
@@ -10,9 +9,9 @@ import { speak } from '../audio/speech.js';
 import { tap as tapSound } from '../audio/sounds.js';
 
 const MODES = [
-  { id: 'tapWord',        label: 'Find the Word',  character: 'koala', accessory: null,    variant: 'classic' },
-  { id: 'wordPicture',    label: 'Match the Story',character: 'panda', accessory: 'bamboo', variant: 'classic' },
-  { id: 'buildSentence',  label: 'Build a Sentence',character: 'panda', accessory: 'bow',  variant: 'pinky'   },
+  { id: 'library',       label: '📚 Read a Book',     character: 'koala', accessory: 'leaf',   variant: 'classic', primary: true  },
+  { id: 'wordPicture',   label: '🧩 Match the Words', character: 'panda', accessory: 'bamboo', variant: 'classic', primary: false },
+  { id: 'buildSentence', label: '✍️ Build a Sentence',character: 'panda', accessory: 'bow',    variant: 'pinky',   primary: false },
 ];
 
 export function mount(container, ctx) {
@@ -35,7 +34,7 @@ export function mount(container, ctx) {
   const handles = [];
   MODES.forEach((mode, i) => {
     const card = document.createElement('div');
-    card.className = 'mode-card';
+    card.className = mode.primary ? 'mode-card mode-card--primary' : 'mode-card';
     card.setAttribute('role', 'button');
     card.setAttribute('aria-label', mode.label);
     card.tabIndex = 0;
@@ -43,8 +42,8 @@ export function mount(container, ctx) {
     const slot = document.createElement('div');
     slot.className = 'character-slot';
     const charSvg = mode.character === 'koala'
-      ? buildKoala({ accessory: mode.accessory, variant: mode.variant, size: 'tall' })
-      : buildPanda({ accessory: mode.accessory, variant: mode.variant, size: 'tall' });
+      ? buildKoala({ accessory: mode.accessory, variant: mode.variant, size: mode.primary ? 'tall' : 'medium' })
+      : buildPanda({ accessory: mode.accessory, variant: mode.variant, size: mode.primary ? 'tall' : 'medium' });
     slot.appendChild(charSvg);
     card.appendChild(slot);
 
@@ -57,7 +56,6 @@ export function mount(container, ctx) {
 
     const h = animate(charSvg);
     handles.push(h);
-    // Stagger waves so they don't all wave at once.
     setTimeout(() => h.wave(), 350 + i * 250);
 
     const go = () => {
@@ -73,8 +71,7 @@ export function mount(container, ctx) {
   scene.appendChild(grid);
   container.appendChild(scene);
 
-  // Welcome speech once the page has settled.
-  setTimeout(() => speak('Hi! Pick a game to play.'), 400);
+  setTimeout(() => speak('Hi! Pick a book, or play a game.'), 400);
 
   return () => handles.forEach((h) => h.detach());
 }

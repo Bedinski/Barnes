@@ -3,6 +3,7 @@ import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { createApp } from '../js/app.js';
+import { BOOKS } from '../js/data/books.js';
 import { _resetAnimator } from '../js/characters/animator.js';
 
 beforeEach(() => {
@@ -17,12 +18,19 @@ test('createApp() mounts the home scene immediately', () => {
   assert.ok(root.querySelector('.scene.home'));
 });
 
-test('navigating to tapWord swaps in the tap-word scene', () => {
+test('navigating to library swaps in the library scene', () => {
   const root = document.getElementById('app');
   const ctx = createApp(root);
-  ctx.navigate('tapWord');
-  assert.ok(root.querySelector('.scene.tap-word'));
+  ctx.navigate('library');
+  assert.ok(root.querySelector('.scene.library'));
   assert.equal(root.querySelector('.scene.home'), null);
+});
+
+test('navigating to reader with a bookId swaps in the reader scene', () => {
+  const root = document.getElementById('app');
+  const ctx = createApp(root);
+  ctx.navigate('reader', { bookId: BOOKS[0].id });
+  assert.ok(root.querySelector('.scene.reader'));
 });
 
 test('navigating to wordPicture swaps in the word-picture scene', () => {
@@ -39,13 +47,13 @@ test('navigating to buildSentence swaps in the build-sentence scene', () => {
   assert.ok(root.querySelector('.scene.build-sentence'));
 });
 
-test('round-trip back to home unmounts and remounts', () => {
+test('round-trip back to home unmounts the previous scene', () => {
   const root = document.getElementById('app');
   const ctx = createApp(root);
-  ctx.navigate('tapWord');
+  ctx.navigate('library');
   ctx.navigate('home');
   assert.ok(root.querySelector('.scene.home'));
-  assert.equal(root.querySelector('.scene.tap-word'), null);
+  assert.equal(root.querySelector('.scene.library'), null);
 });
 
 test('unknown scene name falls back to home', () => {

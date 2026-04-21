@@ -1,6 +1,9 @@
-// "Match the Story" — show a sentence; child taps the matching scene SVG.
+// "Match the Words" — show a phrase or sentence, tap the matching scene.
+// Pulls from book pages AND the standalone sentence list so phrase-matching
+// reinforces the exact vocabulary the child is seeing while reading.
 
 import { SENTENCES } from '../data/sentences.js';
+import { allBookPhrases } from '../data/books.js';
 import { buildScene, listScenes } from '../characters/sceneArt.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';
 import { speak } from '../audio/speech.js';
@@ -15,8 +18,13 @@ function shuffle(arr, rng = Math.random) {
   return copy;
 }
 
-export function pickRound(sentences = SENTENCES, allScenes = listScenes(), rng = Math.random) {
-  const target = sentences[Math.floor(rng() * sentences.length)];
+// Combined pool: book pages (primary reinforcement) + general sentences.
+function phrasePool() {
+  return [...allBookPhrases(), ...SENTENCES];
+}
+
+export function pickRound(pool = phrasePool(), allScenes = listScenes(), rng = Math.random) {
+  const target = pool[Math.floor(rng() * pool.length)];
   const distractorPool = allScenes.filter((id) => id !== target.sceneId);
   const distractor = distractorPool[Math.floor(rng() * distractorPool.length)];
   const order = shuffle([target.sceneId, distractor], rng);
@@ -81,10 +89,12 @@ export function mount(container, ctx) {
           setTimeout(startRound, 1800);
         } else {
           tryAgain();
-          card.animate(
-            [{ transform: 'rotate(-3deg)' }, { transform: 'rotate(3deg)' }, { transform: 'rotate(0)' }],
-            { duration: 380 },
-          );
+          if (typeof card.animate === 'function') {
+            card.animate(
+              [{ transform: 'rotate(-3deg)' }, { transform: 'rotate(3deg)' }, { transform: 'rotate(0)' }],
+              { duration: 380 },
+            );
+          }
           speak('Try again. ' + currentText);
         }
       };

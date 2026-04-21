@@ -114,6 +114,11 @@ const BUILDERS = {
     place(s, buildPanda({ size: 'chibi' }), { x: 150, y: 110, w: 100 });
     return s;
   },
+  'little-koala': () => {
+    const s = frame();
+    place(s, buildKoala({ size: 'chibi' }), { x: 150, y: 110, w: 100 });
+    return s;
+  },
   'play-ball': () => {
     const s = frame();
     ball(s, 200, 230, '#ffd166');
