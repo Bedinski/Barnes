@@ -58,6 +58,176 @@ export const BOOKS = [
   },
 
   {
+    id: 'koala-goes-up',
+    title: 'Koala Goes Up',
+    level: 1,
+    cover: { character: 'koala', accessory: null, variant: 'classic' },
+    pages: [
+      { text: 'The koala can jump.',         sceneId: 'koala-jumping' },
+      { text: 'The koala went up the tree.', sceneId: 'koala-in-tree' },
+      { text: 'The koala saw the sun.',      sceneId: 'sun-up' },
+      { text: 'The koala is up.',            sceneId: 'koala-in-tree' },
+    ],
+    comprehension: [
+      {
+        question: 'Where did the koala go?',
+        options: [
+          { sceneId: 'koala-in-tree', correct: true  },
+          { sceneId: 'koala-on-log',  correct: false },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 'yellow-and-brown',
+    title: 'Yellow and Brown',
+    level: 1,
+    cover: { character: 'koala', accessory: null, variant: 'warm' },
+    pages: [
+      { text: 'The sun is yellow.',                sceneId: 'sun-up' },
+      { text: 'The koala is brown.',               sceneId: 'brown-koala' },
+      { text: 'The panda is black and white.',     sceneId: 'little-panda' },
+      { text: 'We like all of them.',              sceneId: 'play-ball' },
+    ],
+    comprehension: [
+      {
+        question: 'What is yellow?',
+        options: [
+          { sceneId: 'sun-up',      correct: true  },
+          { sceneId: 'brown-koala', correct: false },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 'pandas-in-grass',
+    title: 'Pandas in the Grass',
+    level: 2,
+    cover: { character: 'panda', accessory: 'bamboo', variant: 'pinky' },
+    pages: [
+      { text: 'Two pandas play in the grass.',     sceneId: 'pandas-in-grass' },
+      { text: 'They have a ball.',                 sceneId: 'panda-with-ball' },
+      { text: 'The pandas like to eat bamboo.',    sceneId: 'panda-eats-bamboo' },
+      { text: 'A koala came to play.',             sceneId: 'little-koala' },
+      { text: 'They all play with the ball.',      sceneId: 'play-ball' },
+    ],
+    comprehension: [
+      {
+        question: 'What did the pandas eat?',
+        options: [
+          { sceneId: 'panda-eats-bamboo', correct: true  },
+          { sceneId: 'koala-with-hat',    correct: false },
+        ],
+      },
+      {
+        question: 'Where do the pandas play?',
+        options: [
+          { sceneId: 'pandas-in-grass', correct: true  },
+          { sceneId: 'koala-in-tree',   correct: false },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 'i-see-you-see',
+    title: 'I See, You See',
+    level: 2,
+    cover: { character: 'panda', accessory: null, variant: 'classic' },
+    pages: [
+      { text: 'I see a koala.',              sceneId: 'little-koala' },
+      { text: 'You see a panda.',            sceneId: 'little-panda' },
+      { text: 'The koala can jump.',         sceneId: 'koala-jumping' },
+      { text: 'The panda can eat bamboo.',   sceneId: 'panda-eats-bamboo' },
+      { text: 'We can play, too.',           sceneId: 'play-ball' },
+    ],
+    comprehension: [
+      {
+        question: 'Who can jump?',
+        options: [
+          { sceneId: 'koala-jumping', correct: true  },
+          { sceneId: 'little-panda',  correct: false },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 'what-did-koala-see',
+    title: 'What Did Koala See?',
+    level: 2,
+    cover: { character: 'koala', accessory: 'leaf', variant: 'warm' },
+    pages: [
+      { text: 'The koala went out to play.',    sceneId: 'little-koala' },
+      { text: 'The koala saw a big tree.',      sceneId: 'koala-under-tree' },
+      { text: 'The koala saw the yellow sun.',  sceneId: 'sun-up' },
+      { text: 'The koala saw a panda.',         sceneId: 'little-panda' },
+      { text: 'The panda can eat bamboo.',      sceneId: 'panda-eats-bamboo' },
+      { text: 'They like to play with a ball.', sceneId: 'play-ball' },
+    ],
+    comprehension: [
+      {
+        question: 'What did the panda eat?',
+        options: [
+          { sceneId: 'panda-eats-bamboo', correct: true  },
+          { sceneId: 'play-ball',         correct: false },
+        ],
+      },
+      {
+        question: 'What did the koala see in the sky?',
+        options: [
+          { sceneId: 'sun-up',           correct: true  },
+          { sceneId: 'koala-under-tree', correct: false },
+        ],
+      },
+    ],
+  },
+
+  {
+    id: 'pretty-red-hat',
+    title: 'The Pretty Red Hat',
+    level: 3,
+    cover: { character: 'koala', accessory: 'hat', variant: 'classic' },
+    pages: [
+      { text: 'The koala has a pretty hat.',           sceneId: 'koala-with-hat' },
+      { text: 'The hat is red.',                       sceneId: 'koala-with-hat' },
+      { text: 'The koala can play with the hat.',      sceneId: 'koala-with-hat' },
+      // CYOA: where does the hat go?
+      {
+        text: 'Where will the koala put the hat?',
+        sceneId: 'koala-with-hat',
+        choice: {
+          question: 'Where does the hat go?',
+          options: [
+            { label: '🪵 On the log', text: 'The hat is on the log.', sceneId: 'koala-on-log' },
+            { label: '🌳 In the tree', text: 'The hat is in the tree.', sceneId: 'koala-in-tree' },
+          ],
+        },
+      },
+      { text: 'The panda saw the hat.',                sceneId: 'little-panda' },
+      { text: 'The panda is funny.',                   sceneId: 'funny-panda' },
+    ],
+    comprehension: [
+      {
+        question: 'Who has the red hat?',
+        options: [
+          { sceneId: 'koala-with-hat', correct: true  },
+          { sceneId: 'little-panda',   correct: false },
+        ],
+      },
+      {
+        question: 'Who saw the hat?',
+        options: [
+          { sceneId: 'little-panda', correct: true  },
+          { sceneId: 'sun-up',       correct: false },
+        ],
+      },
+    ],
+  },
+
+  {
     id: 'three-little-koalas',
     title: 'Three Little Koalas',
     level: 3,

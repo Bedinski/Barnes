@@ -9,8 +9,8 @@ import { hasScene } from '../js/characters/sceneArt.js';
 
 const VOCAB = new Set([...ALL_SIGHT_WORDS, ...ALLOWED_NOUNS]);
 
-test('at least 3 books ship with the app', () => {
-  assert.ok(BOOKS.length >= 3, `got ${BOOKS.length}`);
+test('at least 9 books ship with the app', () => {
+  assert.ok(BOOKS.length >= 9, `got ${BOOKS.length}`);
 });
 
 test('every book has an id, title, level, pages, comprehension', () => {
