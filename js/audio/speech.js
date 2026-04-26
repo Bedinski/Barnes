@@ -12,6 +12,31 @@
 
 const DEFAULT_OPTS = { rate: 0.9, pitch: 1.1, volume: 1 };
 
+// Read live user settings without creating an import cycle. Settings
+// module is small and side-effect-free at import time.
+let settingsRef = null;
+async function ensureSettings() {
+  if (settingsRef !== null) return settingsRef;
+  try {
+    const mod = await import('../components/settings.js');
+    settingsRef = mod;
+  } catch (_) {
+    settingsRef = false;
+  }
+  return settingsRef;
+}
+function liveSettings() {
+  // Best-effort sync read; if the dynamic import hasn't resolved yet, fall
+  // back to defaults. Since speech is fired on user interaction (which
+  // happens long after page load), settings will normally be loaded.
+  if (settingsRef && typeof settingsRef.getSettings === 'function') {
+    return settingsRef.getSettings();
+  }
+  // Kick off the import for next time.
+  ensureSettings();
+  return null;
+}
+
 // Priority-ordered lists of voice-name substrings we consider high-quality.
 // macOS / iOS / Safari ship Samantha, Karen, Moira, Ava, Allison.  Chrome
 // on desktop ships "Google US English".  Edge ships Microsoft neural voices
@@ -116,9 +141,15 @@ export function speak(text, opts = {}) {
   if (!text) return () => {};
   ensureVoicesReady();
 
+  // Honor user settings: if speech is muted, behave like unavailable
+  // synthesis (still fires events / synthetic boundaries so highlight UI
+  // still walks through the words for visual reinforcement).
+  const live = liveSettings();
+  const speechMuted = live && live.voiceOn === false;
+
   const onBoundary = typeof opts.onBoundary === 'function' ? opts.onBoundary : null;
 
-  if (!isSpeechAvailable()) {
+  if (speechMuted || !isSpeechAvailable()) {
     fireEvent('speech:start', { text });
     if (onBoundary) {
       // Replay boundaries synthetically so UI tests / JSDOM still exercise
@@ -134,7 +165,9 @@ export function speak(text, opts = {}) {
   try { synth.cancel(); } catch (_) { /* noop */ }
 
   const utter = new globalThis.SpeechSynthesisUtterance(String(text));
-  const o = { ...DEFAULT_OPTS, ...opts };
+  // User-set rate/pitch override module defaults (and module defaults
+  // override the hardcoded constants). Caller-provided opts win over all.
+  const o = { ...DEFAULT_OPTS, ...(live || {}), ...opts };
   utter.rate   = o.rate;
   utter.pitch  = o.pitch;
   utter.volume = o.volume;

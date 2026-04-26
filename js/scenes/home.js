@@ -12,9 +12,10 @@
 import { buildKoala } from '../characters/koala.js';
 import { buildPanda } from '../characters/panda.js';
 import { attach as animate } from '../characters/animator.js';
-import { buildStarCounter }  from '../components/stars.js';
-import { buildBadgeGallery } from '../components/badges.js';
-import { buildStreakChip }   from '../components/streak.js';
+import { buildStarCounter }   from '../components/stars.js';
+import { buildBadgeGallery }  from '../components/badges.js';
+import { buildStreakChip }    from '../components/streak.js';
+import { buildSettingsButton } from '../components/settings.js';
 import { speak } from '../audio/speech.js';
 import { tap as tapSound } from '../audio/sounds.js';
 
@@ -38,6 +39,7 @@ export function mount(container, ctx) {
   top.appendChild(title);
   top.appendChild(buildStreakChip());
   top.appendChild(buildStarCounter());
+  top.appendChild(buildSettingsButton());
   scene.appendChild(top);
 
   const gallery = buildBadgeGallery();
