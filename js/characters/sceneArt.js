@@ -32,6 +32,7 @@ function place(svg, characterSvg, { x, y, w, rotate = 0 }) {
 
 function tree(svg, x = 80, y = 100) {
   const g = document.createElementNS(SVG_NS, 'g');
+  g.dataset.label = 'tree';
   g.innerHTML = `
     <rect x="${x - 8}" y="${y + 60}" width="16" height="120" fill="#8b5a2b" />
     <circle cx="${x}" cy="${y + 30}" r="60" fill="#6dbf6a" />
@@ -44,6 +45,7 @@ function tree(svg, x = 80, y = 100) {
 
 function log(svg, x = 200, y = 220) {
   const g = document.createElementNS(SVG_NS, 'g');
+  g.dataset.label = 'log';
   g.innerHTML = `
     <ellipse cx="${x}" cy="${y}" rx="80" ry="14" fill="#8b5a2b" />
     <ellipse cx="${x - 78}" cy="${y}" rx="6" ry="14" fill="#5e3a1a" />
@@ -56,6 +58,7 @@ function log(svg, x = 200, y = 220) {
 
 function ball(svg, x, y, color = '#ff5d5d') {
   const g = document.createElementNS(SVG_NS, 'g');
+  g.dataset.label = 'ball';
   g.innerHTML = `
     <circle cx="${x}" cy="${y}" r="22" fill="${color}" />
     <path d="M ${x - 22} ${y} Q ${x} ${y - 8} ${x + 22} ${y}" stroke="#ffffff" stroke-width="2" fill="none" />
@@ -67,6 +70,7 @@ function ball(svg, x, y, color = '#ff5d5d') {
 
 function bigSun(svg) {
   const g = document.createElementNS(SVG_NS, 'g');
+  g.dataset.label = 'sun';
   g.innerHTML = `
     <circle cx="200" cy="120" r="70" fill="#ffd166" />
     <g stroke="#f5b842" stroke-width="6" stroke-linecap="round">

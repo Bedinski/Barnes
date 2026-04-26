@@ -10,6 +10,7 @@ import { getBook, BOOKS } from '../data/books.js';
 import { buildScene } from '../characters/sceneArt.js';
 import { buildKoala } from '../characters/koala.js';
 import { attach as animate } from '../characters/animator.js';
+import { makeSceneInteractive } from '../characters/interactive.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';
 import { bumpStat, getStats } from '../components/badges.js';
 import { speak, cancelSpeech } from '../audio/speech.js';
@@ -154,6 +155,7 @@ export function mount(container, ctx, data = {}) {
   let currentIndex = 0;
   let stopReading = () => {};
   let narratorHandle = null;
+  let interactiveCleanup = null;
 
   const totalPages = book.pages.length;
 
@@ -175,8 +177,13 @@ export function mount(container, ctx, data = {}) {
 
     const art = document.createElement('div');
     art.className = 'scene-card book-art' + (isMastered ? ' is-mastered' : '');
-    art.appendChild(buildScene(book.pages[i].sceneId));
+    const sceneSvg = buildScene(book.pages[i].sceneId);
+    art.appendChild(sceneSvg);
     page.appendChild(art);
+    // Every character + prop in the scene becomes tappable. Tapping the
+    // panda speaks "panda", tapping the sun speaks "sun", etc.
+    if (interactiveCleanup) interactiveCleanup();
+    interactiveCleanup = makeSceneInteractive(sceneSvg);
 
     // Tiny narrator koala peeks out of the bottom-left, reactive during reads.
     const narratorWrap = document.createElement('div');
@@ -329,5 +336,6 @@ export function mount(container, ctx, data = {}) {
   return () => {
     stopReading();
     if (narratorHandle) narratorHandle.detach();
+    if (interactiveCleanup) interactiveCleanup();
   };
 }
