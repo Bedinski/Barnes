@@ -40,6 +40,14 @@ export function mount(container, ctx) {
   top.appendChild(buildStreakChip());
   top.appendChild(buildStarCounter());
   top.appendChild(buildSettingsButton());
+  const parentLink = document.createElement('button');
+  parentLink.type = 'button';
+  parentLink.className = 'btn btn--ghost parent-link';
+  parentLink.title = 'For grown-ups';
+  parentLink.setAttribute('aria-label', 'Open grown-ups dashboard');
+  parentLink.textContent = '👪';
+  parentLink.addEventListener('click', () => { tapSound(); ctx.navigate('parent'); });
+  top.appendChild(parentLink);
   scene.appendChild(top);
 
   const gallery = buildBadgeGallery();

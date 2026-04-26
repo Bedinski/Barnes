@@ -8,11 +8,12 @@ import * as reader        from './scenes/reader.js';
 import * as wordPicture   from './scenes/wordPicture.js';
 import * as buildSentence from './scenes/buildSentence.js';
 import * as cloze         from './scenes/cloze.js';
+import * as parent        from './scenes/parent.js';
 import { cancelSpeech }   from './audio/speech.js';
 import { tickStreak }     from './components/streak.js';
 
 const SCENES = {
-  home, library, reader, wordPicture, buildSentence, cloze,
+  home, library, reader, wordPicture, buildSentence, cloze, parent,
 };
 
 export function createApp(container) {
