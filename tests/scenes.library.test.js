@@ -12,20 +12,16 @@ beforeEach(() => {
   globalThis.localStorage.clear();
 });
 
-test('Level 1 is always unlocked', () => {
+test('all levels are always unlocked (locking removed)', () => {
   assert.equal(isLevelUnlocked(1, new Set()), true);
+  assert.equal(isLevelUnlocked(2, new Set()), true);
+  assert.equal(isLevelUnlocked(3, new Set()), true);
 });
 
-test('Level 2 unlocks after any level 1 book is finished', () => {
-  assert.equal(isLevelUnlocked(2, new Set()), false);
-  const someL1 = BOOKS.find((b) => b.level === 1).id;
-  assert.equal(isLevelUnlocked(2, new Set([someL1])), true);
-});
-
-test('Level 3 unlocks after any level 2 book is finished', () => {
-  const someL2 = BOOKS.find((b) => b.level === 2).id;
-  assert.equal(isLevelUnlocked(3, new Set()), false);
-  assert.equal(isLevelUnlocked(3, new Set([someL2])), true);
+test('every book is always unlocked', () => {
+  for (const b of BOOKS) {
+    assert.equal(isBookUnlocked(b, new Set()), true);
+  }
 });
 
 test('library renders one stop per book, grouped into 3 level bands', () => {
@@ -37,37 +33,20 @@ test('library renders one stop per book, grouped into 3 level bands', () => {
   unmount();
 });
 
-test('all level 1 stops are unlocked from the start; level 2/3 are locked', () => {
+test('every map stop is rendered as unlocked — no lock icon, no locked class', () => {
   const ctx = { navigate: () => {} };
   const root = document.getElementById('app');
   mount(root, ctx);
-  const l1Band = root.querySelector('.map-band.level-1');
-  const l2Band = root.querySelector('.map-band.level-2');
-  assert.ok(l1Band.classList.contains('unlocked'));
-  assert.ok(l2Band.classList.contains('locked'));
-  // Each stop in level 1 has class unlocked.
-  for (const li of l1Band.querySelectorAll('.map-stop')) {
-    assert.ok(li.classList.contains('unlocked'));
+  const stops = root.querySelectorAll('.map-stop');
+  for (const s of stops) {
+    assert.ok(s.classList.contains('unlocked'), `stop ${s.dataset.bookId} should be unlocked`);
+    assert.ok(!s.classList.contains('locked'),  `stop ${s.dataset.bookId} should NOT be locked`);
   }
-  for (const li of l2Band.querySelectorAll('.map-stop')) {
-    assert.ok(li.classList.contains('locked'));
-  }
+  // No 🔒 lock badges anywhere on the map.
+  assert.equal(root.querySelectorAll('.map-lock').length, 0);
 });
 
-test('completing a level 1 book unlocks every level 2 stop', () => {
-  const someL1 = BOOKS.find((b) => b.level === 1).id;
-  globalThis.localStorage.setItem('kpr.books', JSON.stringify([someL1]));
-  const ctx = { navigate: () => {} };
-  const root = document.getElementById('app');
-  mount(root, ctx);
-  const l2Band = root.querySelector('.map-band.level-2');
-  assert.ok(l2Band.classList.contains('unlocked'));
-  for (const li of l2Band.querySelectorAll('.map-stop')) {
-    assert.ok(li.classList.contains('unlocked'));
-  }
-});
-
-test('a completed book shows the ✓ done badge', () => {
+test('a completed book still shows the ✓ done badge', () => {
   const someL1 = BOOKS.find((b) => b.level === 1).id;
   globalThis.localStorage.setItem('kpr.books', JSON.stringify([someL1]));
   const ctx = { navigate: () => {} };
@@ -78,28 +57,16 @@ test('a completed book shows the ✓ done badge', () => {
   assert.ok(stop.querySelector('.map-done'));
 });
 
-test('clicking an unlocked book navigates to reader with that bookId', () => {
+test('clicking ANY book — even level 3 with no progress — opens the reader', () => {
   const calls = [];
   const ctx = { navigate: (n, d) => calls.push([n, d]) };
   const root = document.getElementById('app');
   mount(root, ctx);
-  const firstStop = root.querySelector('.map-stop.unlocked');
-  firstStop.click();
+  const l3book = BOOKS.find((b) => b.level === 3);
+  const stop = root.querySelector(`[data-book-id="${l3book.id}"]`);
+  stop.click();
   assert.equal(calls[0][0], 'reader');
-  assert.ok(calls[0][1] && calls[0][1].bookId);
-});
-
-test('clicking a locked book does NOT navigate', () => {
-  const calls = [];
-  const ctx = { navigate: (n) => calls.push(n) };
-  const root = document.getElementById('app');
-  mount(root, ctx);
-  // Level 2 should be locked initially.
-  const lockedStop = root.querySelector('.map-stop.locked');
-  if (lockedStop) {
-    lockedStop.click();
-    assert.equal(calls.length, 0, 'locked stops must not navigate');
-  }
+  assert.equal(calls[0][1].bookId, l3book.id);
 });
 
 test('Home back button navigates to home', () => {
@@ -109,11 +76,4 @@ test('Home back button navigates to home', () => {
   mount(root, ctx);
   root.querySelector('.btn--ghost').click();
   assert.equal(to, 'home');
-});
-
-test('isBookUnlocked returns true only when the book\'s level is unlocked', () => {
-  const l2book = BOOKS.find((b) => b.level === 2);
-  const someL1 = BOOKS.find((b) => b.level === 1).id;
-  assert.equal(isBookUnlocked(l2book, new Set()), false);
-  assert.equal(isBookUnlocked(l2book, new Set([someL1])), true);
 });

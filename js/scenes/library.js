@@ -5,12 +5,10 @@
 // The map shows every book as a "stop" along a winding path. Mascots
 // hop along the path as the child finishes books.
 //
-// Unlock rules — keep the gate gentle, not punitive:
-//   - All Level 1 books are unlocked from the start.
-//   - Level 2 unlocks after the child finishes any 1 Level 1 book.
-//   - Level 3 unlocks after the child finishes any 1 Level 2 book.
-// Inside a level, every book is unlocked once the level is — so the
-// child can pick which one to read.
+// Unlock rules: ALL books are unlocked all the time. Level bands
+// remain so kids see difficulty progression visually, but the child can
+// jump to whichever story interests them — locking out content was
+// punitive, especially when the easy books are quick to outgrow.
 
 import { BOOKS } from '../data/books.js';
 import { buildKoala } from '../characters/koala.js';
@@ -28,17 +26,14 @@ function completedBookIds() {
   }
 }
 
-export function isLevelUnlocked(level, completed) {
-  if (level === 1) return true;
-  // Need to have completed any book whose level is < this one.
-  for (const b of BOOKS) {
-    if (b.level === level - 1 && completed.has(b.id)) return true;
-  }
-  return false;
+// Kept exported for any caller that wants to know — but always returns
+// true now. Removing the function entirely would be a breaking API change.
+export function isLevelUnlocked(_level, _completed) {
+  return true;
 }
 
-export function isBookUnlocked(book, completed) {
-  return isLevelUnlocked(book.level, completed);
+export function isBookUnlocked(_book, _completed) {
+  return true;
 }
 
 const LEVEL_LABEL = { 1: '⭐ Easy',  2: '⭐⭐ Medium', 3: '⭐⭐⭐ Tricky' };
@@ -84,17 +79,11 @@ export function mount(container, ctx) {
     if (!books.length) return;
 
     const band = document.createElement('section');
-    band.className = `map-band level-${level}` + (isLevelUnlocked(level, completed) ? ' unlocked' : ' locked');
+    band.className = `map-band level-${level} unlocked`;
 
     const head = document.createElement('h2');
     head.className = 'map-band-head';
     head.textContent = LEVEL_LABEL[level] || `Level ${level}`;
-    if (!isLevelUnlocked(level, completed)) {
-      const lock = document.createElement('span');
-      lock.className = 'lock-hint';
-      lock.textContent = ' 🔒 Finish a book below to unlock';
-      head.appendChild(lock);
-    }
     band.appendChild(head);
 
     const path = document.createElement('ol');
@@ -102,9 +91,8 @@ export function mount(container, ctx) {
 
     books.forEach((book) => {
       const li = document.createElement('li');
-      const unlocked = isLevelUnlocked(level, completed);
       const isDone = completed.has(book.id);
-      li.className = 'map-stop' + (unlocked ? ' unlocked' : ' locked') + (isDone ? ' done' : '');
+      li.className = 'map-stop unlocked' + (isDone ? ' done' : '');
       li.dataset.bookId = book.id;
       li.dataset.idx = String(stopCounter++);
       li.style.setProperty('--stop-index', String(li.dataset.idx));
@@ -120,12 +108,6 @@ export function mount(container, ctx) {
       charSlot.appendChild(svg);
       island.appendChild(charSlot);
 
-      if (!unlocked) {
-        const lock = document.createElement('span');
-        lock.className = 'map-lock';
-        lock.textContent = '🔒';
-        island.appendChild(lock);
-      }
       if (isDone) {
         const tick = document.createElement('span');
         tick.className = 'map-done';
@@ -144,18 +126,14 @@ export function mount(container, ctx) {
       const h = animate(svg);
       handles.push(h);
 
-      if (unlocked) {
-        li.setAttribute('role', 'button');
-        li.setAttribute('aria-label', `Read ${book.title}`);
-        li.tabIndex = 0;
-        const open = () => { tapSound(); ctx.navigate('reader', { bookId: book.id }); };
-        li.addEventListener('click', open);
-        li.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-        });
-      } else {
-        li.setAttribute('aria-label', `${book.title} — locked. Finish a level ${level - 1} book to unlock.`);
-      }
+      li.setAttribute('role', 'button');
+      li.setAttribute('aria-label', `Read ${book.title}`);
+      li.tabIndex = 0;
+      const open = () => { tapSound(); ctx.navigate('reader', { bookId: book.id }); };
+      li.addEventListener('click', open);
+      li.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+      });
     });
 
     band.appendChild(path);
