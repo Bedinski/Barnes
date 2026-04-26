@@ -56,3 +56,18 @@ test('buildStarCounter() reflects current count and updates on event', () => {
   rewardStar({ x: 0, y: 0 });
   assert.match(el.innerHTML, /4/);
 });
+
+test('star counter is a real <button> (taps must feel responsive)', () => {
+  const el = buildStarCounter();
+  assert.equal(el.tagName, 'BUTTON');
+  assert.ok(el.hasAttribute('aria-label'));
+});
+
+test('clicking the star counter toggles the is-pulse class', () => {
+  setStarCount(2);
+  const el = buildStarCounter();
+  document.body.appendChild(el);
+  el.click();
+  assert.ok(el.classList.contains('is-pulse'),
+    'star counter should pulse on tap so the kid sees feedback');
+});

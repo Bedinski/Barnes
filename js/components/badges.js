@@ -105,7 +105,29 @@ function showBadgeToasts(badges) {
   });
 }
 
-// Topbar gallery — a row of small chips, lit-up if earned, faded if not.
+// Pop a tooltip-style label below the tapped chip so the kid sees
+// immediate visual proof their tap registered. Auto-removes.
+function showBadgePopover(anchor, badge, earned) {
+  // Remove any existing popover first.
+  document.querySelectorAll('.badge-popover').forEach((p) => p.remove());
+  const pop = document.createElement('div');
+  pop.className = 'badge-popover';
+  pop.innerHTML = `
+    <span class="pop-emoji">${badge.emoji}</span>
+    <span class="pop-name">${badge.label}</span>
+    <span class="pop-hint">${earned ? '✓ Earned!' : badge.hint}</span>
+  `;
+  document.body.appendChild(pop);
+  // Position centered below the chip, clamped inside the viewport.
+  const rect = anchor.getBoundingClientRect();
+  const top  = rect.bottom + 8;
+  const left = Math.max(60, Math.min((globalThis.innerWidth || 800) - 60, rect.left + rect.width / 2));
+  pop.style.left = `${left}px`;
+  pop.style.top  = `${top}px`;
+  setTimeout(() => pop.remove(), 2200);
+}
+
+// Topbar gallery — a row of chips, lit-up if earned, faded if not.
 export function buildBadgeGallery() {
   const wrap = document.createElement('div');
   wrap.className = 'badge-gallery';
@@ -118,11 +140,18 @@ export function buildBadgeGallery() {
       chip.type = 'button';
       chip.className = `badge-chip ${earned.has(b.id) ? 'is-earned' : 'is-locked'}`;
       chip.setAttribute('aria-label', `${b.label}: ${b.hint}`);
-      chip.title = `${b.label} — ${b.hint}`;
       chip.dataset.badgeId = b.id;
       chip.textContent = b.emoji;
-      chip.addEventListener('click', () => {
-        speak(earned.has(b.id) ? `${b.label}!` : `${b.label}. ${b.hint}.`);
+      chip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isEarned = earned.has(b.id);
+        // Visible: pulse the chip + show a popover with the label & hint.
+        chip.classList.remove('is-pulse');
+        // restart animation
+        void chip.offsetWidth;
+        chip.classList.add('is-pulse');
+        showBadgePopover(chip, b, isEarned);
+        speak(isEarned ? `${b.label}!` : `${b.label}. ${b.hint}.`);
       });
       wrap.appendChild(chip);
     });

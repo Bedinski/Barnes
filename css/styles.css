@@ -31,13 +31,15 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
-  overflow: hidden;
+  /* Allow the page to scroll naturally on mobile. The previous version
+     locked overflow which prevented scrolling on small screens. */
+  min-height: 100%;
   font-family: var(--font);
   color: var(--c-text);
   background:
     radial-gradient(circle at 50% 110%, var(--c-grass) 0%, transparent 55%),
-    linear-gradient(to bottom, var(--c-sky-2) 0%, var(--c-sky) 100%);
+    linear-gradient(to bottom, var(--c-sky-2) 0%, var(--c-sky) 100%) fixed;
+  background-attachment: fixed;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   touch-action: manipulation;
@@ -46,12 +48,13 @@ html, body {
 #app {
   position: relative;
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
+  /* Use dvh on browsers that support it for true mobile viewport. */
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  justify-content: stretch;
-  overflow: hidden;
+  /* Honor iOS notch / Android display cutout. */
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* -------- Decorative sun in corner -------- */
@@ -78,7 +81,9 @@ body::before {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 16px clamp(16px, 4vw, 40px);
+  padding: 16px clamp(12px, 4vw, 40px);
+  /* Honor iOS top inset on the home topbar */
+  padding-top: max(16px, env(safe-area-inset-top));
   position: relative;
   z-index: 1;
 }
@@ -87,10 +92,13 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
   margin-bottom: 8px;
   min-height: 56px;
+  flex-wrap: wrap;
 }
+.topbar > * { flex-shrink: 0; }
+.topbar .title { flex: 1 1 auto; min-width: 0; }
 
 .btn {
   background: var(--c-sun);
@@ -124,12 +132,25 @@ body::before {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  font-family: var(--font);
   font-size: clamp(20px, 3vw, 28px);
   font-weight: bold;
   background: #fff8e7;
+  color: var(--c-text);
   border: 3px solid var(--c-card-edge);
   border-radius: 999px;
-  padding: 6px 16px;
+  padding: 8px 18px;
+  cursor: pointer;
+  min-height: 48px;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.star-counter:hover  { transform: translateY(-2px); box-shadow: 0 3px 0 var(--c-shadow); }
+.star-counter:active { transform: translateY(2px) scale(.96); }
+.star-counter.is-pulse { animation: star-pulse .55s ease-out; }
+@keyframes star-pulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.18); box-shadow: 0 0 0 6px rgba(255,209,102,.5); }
+  100% { transform: scale(1); }
 }
 
 .title {
@@ -151,11 +172,24 @@ body::before {
 
 .home-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 24px;
-  flex: 1;
-  align-content: center;
-  padding: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 12px 0;
+  /* Don't try to fill the viewport — let the page scroll if needed. */
+}
+@media (max-width: 480px) {
+  .home-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .mode-card {
+    min-height: 200px;
+    padding: 12px;
+  }
+  .mode-card--primary {
+    grid-column: 1 / -1;
+    min-height: 220px;
+  }
 }
 
 .mode-card {
@@ -708,16 +742,25 @@ body::before {
 
 .badge-gallery {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   justify-content: center;
-  padding: 6px 12px 0;
+  align-items: center;
+  padding: 8px 12px;
+  /* On narrow screens, scroll horizontally instead of squishing. */
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
+.badge-gallery::-webkit-scrollbar { height: 6px; }
+.badge-gallery::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 3px; }
 .badge-chip {
   font-family: var(--font);
-  font-size: 24px;
-  width: 48px;
-  height: 48px;
+  font-size: 28px;
+  /* 48px → 56px so it's a real Apple/Material tap target. */
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
   border-radius: 50%;
   background: #fff;
   border: 3px solid var(--c-card-edge);
@@ -725,11 +768,42 @@ body::before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform .12s ease, filter .12s ease, opacity .12s ease;
+  transition: transform .12s ease, filter .12s ease, opacity .12s ease, box-shadow .12s ease;
+  position: relative;
+  padding: 0;
 }
-.badge-chip:hover { transform: translateY(-2px); }
-.badge-chip.is-locked  { filter: grayscale(1); opacity: .35; }
-.badge-chip.is-earned  { background: #fff3d6; border-color: #e08e2a; box-shadow: 0 2px 0 var(--c-shadow); }
+.badge-chip:hover  { transform: translateY(-2px); }
+.badge-chip:active { transform: translateY(2px) scale(.94); }
+.badge-chip.is-locked  { filter: grayscale(1); opacity: .45; }
+.badge-chip.is-earned  { background: #fff3d6; border-color: #e08e2a; box-shadow: 0 3px 0 var(--c-shadow); }
+.badge-chip.is-pulse   { animation: chip-pulse .5s ease-out; }
+@keyframes chip-pulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.25); box-shadow: 0 0 0 6px rgba(255,209,102,.5); }
+  100% { transform: scale(1); box-shadow: 0 3px 0 var(--c-shadow); }
+}
+
+/* Popover that explains a badge when tapped — much clearer than just speaking. */
+.badge-popover {
+  position: absolute;
+  z-index: 250;
+  background: #fff;
+  border: 3px solid var(--c-card-edge);
+  border-radius: 14px;
+  padding: 10px 14px;
+  box-shadow: 0 6px 0 var(--c-shadow);
+  font-family: var(--font);
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: pop-in .25s ease-out, pop-out .3s ease-in 1.7s forwards;
+}
+.badge-popover .pop-emoji { font-size: 24px; display: block; }
+.badge-popover .pop-name  { font-size: 16px; }
+.badge-popover .pop-hint  { font-size: 13px; color: #666; font-weight: normal; }
+@keyframes pop-in  { from { opacity: 0; transform: translate(-50%, 6px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes pop-out { to   { opacity: 0; transform: translate(-50%, -4px); } }
 
 /* Toast that pops in when a new badge is earned */
 .badge-toast {
@@ -1093,6 +1167,42 @@ body::before {
   20%  { opacity: 1; transform: translate(-50%, 0);    }
   80%  { opacity: 1; }
   100% { opacity: 0; transform: translate(-50%, -10px); }
+}
+
+/* ===================== MOBILE TIGHTENING ===================== */
+
+@media (max-width: 480px) {
+  :root { --tap: 56px; }
+  .title       { font-size: clamp(22px, 6vw, 32px); }
+  .star-counter { font-size: 18px; padding: 6px 12px; }
+  .streak-chip  { font-size: 16px; padding: 4px 10px; }
+  .gear-btn, .parent-link { padding: 4px 10px; font-size: 20px; }
+
+  .badge-chip {
+    width: 48px; height: 48px;
+    flex: 0 0 48px;
+    font-size: 24px;
+  }
+  .topbar { gap: 6px; row-gap: 4px; }
+  /* Let the title shrink rather than pushing chips off-screen */
+  .topbar .title { font-size: clamp(20px, 5.5vw, 28px); }
+
+  .scene { padding: 12px 12px 24px; }
+
+  /* Reader page text shrinks on narrow screens so a 7-word line fits. */
+  .scene.reader .page-text { font-size: clamp(22px, 5vw, 32px); padding: 10px 14px; }
+  .scene.reader .book-art  { min-height: 200px; }
+  .scene.reader .narrator-slot { width: 64px; }
+  .reader-controls .btn { padding: 10px 12px; font-size: 16px; }
+  .reader-controls .btn--big { font-size: 18px; }
+
+  /* Cloze + sentence cards reflow */
+  .cloze-sentence { font-size: clamp(22px, 5vw, 30px); }
+  .tile { font-size: 20px; min-width: 70px; min-height: 56px; padding: 8px 12px; }
+  .slot { min-width: 70px; min-height: 56px; }
+
+  /* Settings modal stays on screen */
+  .settings-modal { padding: 14px 16px; }
 }
 
 /* ===================== A11Y ===================== */

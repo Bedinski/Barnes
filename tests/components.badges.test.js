@@ -98,3 +98,31 @@ test('Master Reader fires after 5 mastered pages (re-reading reward)', () => {
   for (let i = 0; i < 5; i++) bumpStat('pagesMastered', 1);
   assert.equal(isEarned('master-reader'), true);
 });
+
+test('clicking a badge chip shows a popover with the label and hint', () => {
+  const gal = buildBadgeGallery();
+  document.body.appendChild(gal);
+  const chip = gal.querySelector('.badge-chip');
+  chip.click();
+  const pop = document.querySelector('.badge-popover');
+  assert.ok(pop, 'popover should appear so the kid sees their tap registered');
+  assert.match(pop.textContent, /[A-Za-z]/, 'popover has readable text');
+});
+
+test('only one popover at a time — second click replaces the first', () => {
+  const gal = buildBadgeGallery();
+  document.body.appendChild(gal);
+  const chips = gal.querySelectorAll('.badge-chip');
+  chips[0].click();
+  chips[1].click();
+  assert.equal(document.querySelectorAll('.badge-popover').length, 1);
+});
+
+test('clicking a chip toggles the is-pulse class for visible feedback', () => {
+  const gal = buildBadgeGallery();
+  document.body.appendChild(gal);
+  const chip = gal.querySelector('.badge-chip');
+  chip.click();
+  assert.ok(chip.classList.contains('is-pulse'),
+    'chip should pulse so the kid sees their tap');
+});

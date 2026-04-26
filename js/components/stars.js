@@ -65,10 +65,37 @@ export function rewardStar(opts = {}) {
 }
 
 export function buildStarCounter() {
-  const span = document.createElement('span');
-  span.className = 'star-counter';
-  const update = (n) => { span.innerHTML = `⭐ <strong>${n}</strong>`; };
+  // Render as a button so it's obviously tappable. Tap = pulse + speech
+  // ("You have 7 stars!") so the kid sees AND hears their reward count
+  // when they're curious.
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'star-counter';
+  btn.setAttribute('aria-label', 'Stars earned');
+  const update = (n) => {
+    btn.innerHTML = `⭐ <strong>${n}</strong>`;
+    btn.setAttribute('aria-label', `${n} stars earned. Tap to hear.`);
+  };
   update(getStarCount());
   document.addEventListener('stars:changed', (e) => update(e.detail.count));
-  return span;
+
+  btn.addEventListener('click', async () => {
+    btn.classList.remove('is-pulse');
+    void btn.offsetWidth;
+    btn.classList.add('is-pulse');
+    const n = getStarCount();
+    // Lazy-import speak/tap so this module stays free of side-effect loops.
+    try {
+      const [{ speak }, { tap }] = await Promise.all([
+        import('../audio/speech.js'),
+        import('../audio/sounds.js'),
+      ]);
+      tap();
+      const msg = n === 0 ? 'No stars yet. Read a book to earn one!'
+        : n === 1 ? 'You have 1 star!'
+        : `You have ${n} stars!`;
+      speak(msg);
+    } catch (_) { /* ignore in test env */ }
+  });
+  return btn;
 }
