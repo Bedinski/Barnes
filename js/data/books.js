@@ -66,6 +66,20 @@ export const BOOKS = [
       { text: 'Look at the three koalas.', sceneId: 'three-koalas' },
       { text: 'One koala is brown.',       sceneId: 'brown-koala' },
       { text: 'One koala has a red hat.',  sceneId: 'koala-with-hat' },
+      // Choose-your-own-adventure: the child picks the play activity.
+      // Both branches use existing scenes + known vocabulary so they're
+      // fully decodable, and they converge at the next page.
+      {
+        text: 'The koalas want to play.',
+        sceneId: 'three-koalas',
+        choice: {
+          question: 'What do they play with?',
+          options: [
+            { label: '⚽ A ball', text: 'They play with a ball.', sceneId: 'play-ball' },
+            { label: '🎩 A hat',  text: 'They play with a hat.',  sceneId: 'koala-with-hat' },
+          ],
+        },
+      },
       { text: 'The koalas saw a panda.',   sceneId: 'little-panda' },
       { text: 'The panda is funny.',       sceneId: 'funny-panda' },
       { text: 'They all like to play.',    sceneId: 'play-ball' },

@@ -211,6 +211,73 @@ export function mount(container, ctx, data = {}) {
       tapSound();
       stopReading = readAloud(book.pages[i].text, wordSpans);
     };
+
+    // Choose-your-own-adventure: if this page has a `choice`, render the
+    // question + option buttons under the text. Picking one renders the
+    // chosen branch as a transient page, then advances to the next regular
+    // page on Next.
+    if (book.pages[i].choice) {
+      renderChoice(book.pages[i].choice);
+    }
+  };
+
+  // Render the choice question + option buttons inside the current page.
+  // Tapping an option swaps the page text + scene art with the chosen
+  // branch (still on the same page index) so the child reads the
+  // resulting sentence. Next then advances to the next regular page.
+  const renderChoice = (choice) => {
+    const choicePanel = document.createElement('div');
+    choicePanel.className = 'choice-panel';
+    const q = document.createElement('h3');
+    q.className = 'choice-question';
+    q.textContent = choice.question;
+    choicePanel.appendChild(q);
+    const row = document.createElement('div');
+    row.className = 'choice-options';
+    choice.options.forEach((opt) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn btn--big choice-btn';
+      b.textContent = opt.label;
+      b.dataset.sceneId = opt.sceneId;
+      b.addEventListener('click', () => {
+        tapSound();
+        applyBranch(opt);
+      });
+      row.appendChild(b);
+    });
+    choicePanel.appendChild(row);
+    page.appendChild(choicePanel);
+    setTimeout(() => speak(choice.question), 300);
+  };
+
+  const applyBranch = (opt) => {
+    // Swap the scene art + page text with the chosen branch, then let the
+    // user re-read it; tapping Next will advance as normal.
+    stopReading();
+    const oldArt  = page.querySelector('.book-art');
+    const oldText = page.querySelector('.page-text');
+    const oldChoice = page.querySelector('.choice-panel');
+    if (oldChoice) oldChoice.remove();
+    if (oldArt) {
+      oldArt.innerHTML = '';
+      const newScene = buildScene(opt.sceneId);
+      oldArt.appendChild(newScene);
+      if (interactiveCleanup) interactiveCleanup();
+      interactiveCleanup = makeSceneInteractive(newScene);
+    }
+    if (oldText) {
+      oldText.innerHTML = '';
+      const { frag, wordSpans } = renderWordRun(opt.text);
+      oldText.appendChild(frag);
+      setTimeout(() => { stopReading = readAloud(opt.text, wordSpans); }, 250);
+      // The Read-to-me button now reads the branch text, not the original.
+      readBtn.onclick = () => {
+        tapSound();
+        stopReading = readAloud(opt.text, wordSpans);
+      };
+    }
+    bumpStat('rounds', 1);
   };
 
   const showComprehension = () => {

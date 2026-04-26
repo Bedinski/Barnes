@@ -139,6 +139,37 @@ test('page-text content matches the book text exactly (word order preserved)', (
   unmount();
 });
 
+test('a choice page renders a question + option buttons; picking one swaps the page', () => {
+  const ctx = { navigate: () => {} };
+  const root = document.getElementById('app');
+
+  // Find the first book that has a CYOA page.
+  const book = BOOKS.find((b) => b.pages.some((p) => p.choice));
+  assert.ok(book, 'expected at least one book with a CYOA page for this test');
+  const choiceIdx = book.pages.findIndex((p) => p.choice);
+
+  mount(root, ctx, { bookId: book.id });
+  const nextBtn = root.querySelectorAll('.reader-controls .btn')[2];
+  for (let i = 0; i < choiceIdx; i++) nextBtn.click();
+
+  // Choice panel appears with the right question + 2+ options.
+  const panel = root.querySelector('.choice-panel');
+  assert.ok(panel, 'choice panel should render');
+  assert.equal(panel.querySelector('.choice-question').textContent,
+               book.pages[choiceIdx].choice.question);
+  const opts = panel.querySelectorAll('.choice-btn');
+  assert.equal(opts.length, book.pages[choiceIdx].choice.options.length);
+
+  // Pick the first option and verify the page text swaps to that branch.
+  const branch = book.pages[choiceIdx].choice.options[0];
+  const targetBtn = Array.from(opts).find((b) => b.dataset.sceneId === branch.sceneId);
+  targetBtn.click();
+  const newText = root.querySelector('.page-text').textContent.replace(/\s+/g, ' ').trim();
+  assert.equal(newText, branch.text.replace(/\s+/g, ' ').trim());
+  // Choice panel removed after pick.
+  assert.equal(root.querySelector('.choice-panel'), null);
+});
+
 test('unknown bookId redirects to library', () => {
   const calls = [];
   const ctx = { navigate: (n) => calls.push(n) };

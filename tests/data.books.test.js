@@ -50,6 +50,21 @@ test('every word in every page text is in our sight-word or noun vocab', () => {
         assert.ok(VOCAB.has(cleaned),
           `"${cleaned}" in "${page.text}" (${book.id}) not in vocab`);
       }
+      // Choose-your-own-adventure pages: each option's text must also be
+      // fully decodable, and option sceneIds must resolve.
+      if (page.choice) {
+        assert.ok(page.choice.question.length > 0);
+        assert.ok(page.choice.options.length >= 2, 'CYOA needs ≥2 options');
+        for (const opt of page.choice.options) {
+          assert.ok(opt.label.length > 0);
+          assert.ok(opt.text.length > 0);
+          assert.ok(hasScene(opt.sceneId), `CYOA option scene "${opt.sceneId}" missing`);
+          for (const w of tokenize(opt.text)) {
+            const c = w.toLowerCase().replace(/[.,!?]/g, '');
+            assert.ok(VOCAB.has(c), `"${c}" in CYOA option "${opt.text}" not in vocab`);
+          }
+        }
+      }
     }
   }
 });
