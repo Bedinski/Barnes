@@ -9,11 +9,12 @@ import * as wordPicture   from './scenes/wordPicture.js';
 import * as buildSentence from './scenes/buildSentence.js';
 import * as cloze         from './scenes/cloze.js';
 import * as parent        from './scenes/parent.js';
+import * as phonics       from './scenes/phonics.js';
 import { cancelSpeech }   from './audio/speech.js';
 import { tickStreak }     from './components/streak.js';
 
 const SCENES = {
-  home, library, reader, wordPicture, buildSentence, cloze, parent,
+  home, library, reader, wordPicture, buildSentence, cloze, parent, phonics,
 };
 
 export function createApp(container) {

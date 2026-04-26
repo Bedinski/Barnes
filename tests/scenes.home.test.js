@@ -11,11 +11,11 @@ beforeEach(() => {
   globalThis.localStorage.clear();
 });
 
-test('home renders 4 mode cards (Books + 3 practice modes)', () => {
+test('home renders 5 mode cards (Books + 4 practice modes)', () => {
   const ctx = { navigate: () => {} };
   const root = document.getElementById('app');
   const unmount = mount(root, ctx);
-  assert.equal(root.querySelectorAll('.mode-card').length, 4);
+  assert.equal(root.querySelectorAll('.mode-card').length, 5);
   unmount();
 });
 
@@ -40,14 +40,15 @@ test('tapping the primary card navigates to library', () => {
   unmount();
 });
 
-test('the practice cards route to cloze, wordPicture, and buildSentence', () => {
+test('the practice cards route to phonics, cloze, wordPicture, and buildSentence', () => {
   const navCalls = [];
   const ctx = { navigate: (n) => navCalls.push(n) };
   const root = document.getElementById('app');
   const unmount = mount(root, ctx);
   const nonPrimary = Array.from(root.querySelectorAll('.mode-card:not(.mode-card--primary)'));
-  assert.equal(nonPrimary.length, 3);
+  assert.equal(nonPrimary.length, 4);
   nonPrimary.forEach((c) => c.click());
+  assert.ok(navCalls.includes('phonics'),       'should route to phonics');
   assert.ok(navCalls.includes('cloze'),         'should route to cloze');
   assert.ok(navCalls.includes('wordPicture'),   'should route to wordPicture');
   assert.ok(navCalls.includes('buildSentence'), 'should route to buildSentence');

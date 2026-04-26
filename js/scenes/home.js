@@ -21,6 +21,7 @@ import { tap as tapSound } from '../audio/sounds.js';
 
 const MODES = [
   { id: 'library',       label: '📚 Read a Book',     character: 'koala', accessory: 'leaf',   variant: 'classic', primary: true  },
+  { id: 'phonics',       label: '🔤 Sound it Out',    character: 'panda', accessory: null,     variant: 'classic', primary: false },
   { id: 'cloze',         label: '🧠 Fill the Blank',  character: 'koala', accessory: null,     variant: 'warm',    primary: false },
   { id: 'wordPicture',   label: '🧩 Match the Words', character: 'panda', accessory: 'bamboo', variant: 'classic', primary: false },
   { id: 'buildSentence', label: '✍️ Build a Sentence',character: 'panda', accessory: 'bow',    variant: 'pinky',   primary: false },
