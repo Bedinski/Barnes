@@ -11,11 +11,11 @@ beforeEach(() => {
   globalThis.localStorage.clear();
 });
 
-test('home renders exactly 3 mode cards', () => {
+test('home renders 4 mode cards (Books + 3 practice modes)', () => {
   const ctx = { navigate: () => {} };
   const root = document.getElementById('app');
   const unmount = mount(root, ctx);
-  assert.equal(root.querySelectorAll('.mode-card').length, 3);
+  assert.equal(root.querySelectorAll('.mode-card').length, 4);
   unmount();
 });
 
@@ -40,16 +40,27 @@ test('tapping the primary card navigates to library', () => {
   unmount();
 });
 
-test('the other two cards navigate to wordPicture and buildSentence', () => {
+test('the practice cards route to cloze, wordPicture, and buildSentence', () => {
   const navCalls = [];
   const ctx = { navigate: (n) => navCalls.push(n) };
   const root = document.getElementById('app');
   const unmount = mount(root, ctx);
   const nonPrimary = Array.from(root.querySelectorAll('.mode-card:not(.mode-card--primary)'));
-  assert.equal(nonPrimary.length, 2);
+  assert.equal(nonPrimary.length, 3);
   nonPrimary.forEach((c) => c.click());
-  assert.ok(navCalls.includes('wordPicture'));
-  assert.ok(navCalls.includes('buildSentence'));
+  assert.ok(navCalls.includes('cloze'),         'should route to cloze');
+  assert.ok(navCalls.includes('wordPicture'),   'should route to wordPicture');
+  assert.ok(navCalls.includes('buildSentence'), 'should route to buildSentence');
+  unmount();
+});
+
+test('home shows the streak chip and badge gallery', () => {
+  const ctx = { navigate: () => {} };
+  const root = document.getElementById('app');
+  const unmount = mount(root, ctx);
+  assert.ok(root.querySelector('.streak-chip'),   'streak chip should be rendered');
+  assert.ok(root.querySelector('.badge-gallery'), 'badge gallery should be rendered');
+  assert.ok(root.querySelectorAll('.badge-chip').length >= 5, 'multiple badges shown');
   unmount();
 });
 

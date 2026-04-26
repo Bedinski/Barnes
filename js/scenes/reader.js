@@ -11,15 +11,45 @@ import { buildScene } from '../characters/sceneArt.js';
 import { buildKoala } from '../characters/koala.js';
 import { attach as animate } from '../characters/animator.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';
+import { bumpStat, getStats } from '../components/badges.js';
 import { speak, cancelSpeech } from '../audio/speech.js';
 import { success, tryAgain, tap as tapSound } from '../audio/sounds.js';
+
+const KEY_PAGE_READS = 'kpr.pageReads';   // { "<bookId>:<idx>": readCount }
+const MASTERED_AT    = 3;                  // re-reading is the #1 fluency intervention
+
+function loadPageReads() {
+  try { return JSON.parse(globalThis.localStorage?.getItem(KEY_PAGE_READS) || '{}'); }
+  catch (_) { return {}; }
+}
+function bumpPageRead(bookId, idx) {
+  const all = loadPageReads();
+  const k = `${bookId}:${idx}`;
+  const prev = all[k] || 0;
+  all[k] = prev + 1;
+  try { globalThis.localStorage?.setItem(KEY_PAGE_READS, JSON.stringify(all)); }
+  catch (_) { /* noop */ }
+  // When this page crosses the mastery threshold, mirror to the badges
+  // stat so Master Reader can fire.
+  if (prev + 1 === MASTERED_AT) {
+    bumpStat('pagesMastered', 1);
+  }
+  return all[k];
+}
+export function getPageReadCount(bookId, idx) {
+  return loadPageReads()[`${bookId}:${idx}`] || 0;
+}
 
 function markBookComplete(bookId) {
   try {
     const raw = globalThis.localStorage?.getItem('kpr.books') || '[]';
     const arr = JSON.parse(raw);
-    if (!arr.includes(bookId)) arr.push(bookId);
-    globalThis.localStorage?.setItem('kpr.books', JSON.stringify(arr));
+    const wasNew = !arr.includes(bookId);
+    if (wasNew) {
+      arr.push(bookId);
+      globalThis.localStorage?.setItem('kpr.books', JSON.stringify(arr));
+      bumpStat('booksRead', 1);
+    }
   } catch (_) { /* noop */ }
 }
 
@@ -41,6 +71,7 @@ function renderWordRun(text) {
         tapSound();
         span.classList.add('is-highlight');
         speak(part);
+        bumpStat('wordsTapped', 1);
         setTimeout(() => span.classList.remove('is-highlight'), 700);
       });
       frag.appendChild(span);
@@ -130,13 +161,20 @@ export function mount(container, ctx, data = {}) {
     stopReading();
     page.innerHTML = '';
 
+    // Bump per-page read count and fire mastery cues. Re-reading is the
+    // #1 evidence-backed fluency intervention for early elementary, so
+    // we encourage it visually.
+    const reads = bumpPageRead(book.id, i);
+    const isMastered = reads >= MASTERED_AT;
+
     const indicator = document.createElement('div');
     indicator.className = 'page-indicator';
-    indicator.textContent = `Page ${i + 1} of ${totalPages}`;
+    const dots = '●'.repeat(Math.min(reads, MASTERED_AT)) + '○'.repeat(Math.max(0, MASTERED_AT - reads));
+    indicator.textContent = `Page ${i + 1} of ${totalPages}   ${dots}${isMastered ? '  🏆 Mastered!' : ''}`;
     page.appendChild(indicator);
 
     const art = document.createElement('div');
-    art.className = 'scene-card book-art';
+    art.className = 'scene-card book-art' + (isMastered ? ' is-mastered' : '');
     art.appendChild(buildScene(book.pages[i].sceneId));
     page.appendChild(art);
 
@@ -185,12 +223,14 @@ export function mount(container, ctx, data = {}) {
       page.innerHTML = '';
       const q = qs[qIdx];
       if (!q) {
-        // All questions done — award star, mark book read, back to library.
+        // All questions done — award star, mark book read, then offer
+        // either Read Again (the evidence-based fluency move) or Library.
         success();
         rewardStar();
         markBookComplete(book.id);
+        bumpStat('rounds', 1);
         speak('You read the book! Great job!');
-        setTimeout(() => ctx.navigate('library'), 2400);
+        renderFinish();
         return;
       }
       const h = document.createElement('h2');
@@ -231,6 +271,43 @@ export function mount(container, ctx, data = {}) {
       setTimeout(() => speak(q.question), 250);
     };
     renderQuestion();
+  };
+
+  const renderFinish = () => {
+    page.innerHTML = '';
+    controls.style.display = 'none';
+
+    const cheer = document.createElement('h2');
+    cheer.className = 'prompt';
+    cheer.textContent = '🎉 You finished the book!';
+    page.appendChild(cheer);
+
+    const sub = document.createElement('p');
+    sub.className = 'finish-sub';
+    sub.textContent = 'Want to read it again? Reading the same book a few times helps you get faster.';
+    page.appendChild(sub);
+
+    const row = document.createElement('div');
+    row.className = 'finish-actions';
+
+    const again = document.createElement('button');
+    again.className = 'btn btn--big';
+    again.textContent = '📖 Read Again';
+    again.addEventListener('click', () => {
+      tapSound();
+      controls.style.display = '';
+      currentIndex = 0;
+      renderPage(0);
+    });
+
+    const lib = document.createElement('button');
+    lib.className = 'btn';
+    lib.textContent = '📚 Back to Library';
+    lib.addEventListener('click', () => { tapSound(); ctx.navigate('library'); });
+
+    row.appendChild(again);
+    row.appendChild(lib);
+    page.appendChild(row);
   };
 
   prevBtn.addEventListener('click', () => {

@@ -4,6 +4,7 @@
 import { SENTENCES, tokenize } from '../data/sentences.js';
 import { buildScene } from '../characters/sceneArt.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';
+import { bumpStat } from '../components/badges.js';
 import { speak } from '../audio/speech.js';
 import { success, tryAgain, tap as tapSound } from '../audio/sounds.js';
 
@@ -68,6 +69,7 @@ export function mount(container, ctx) {
     if (ok) {
       success();
       rewardStar();
+      bumpStat('rounds', 1);
       speak(currentTarget.target.text);
       setTimeout(startRound, 2200);
     } else {

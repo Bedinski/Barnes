@@ -6,6 +6,7 @@ import { SENTENCES } from '../data/sentences.js';
 import { allBookPhrases } from '../data/books.js';
 import { buildScene, listScenes } from '../characters/sceneArt.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';
+import { bumpStat } from '../components/badges.js';
 import { speak } from '../audio/speech.js';
 import { success, tryAgain, tap as tapSound } from '../audio/sounds.js';
 
@@ -85,6 +86,7 @@ export function mount(container, ctx) {
           success();
           const rect = card.getBoundingClientRect();
           rewardStar({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+          bumpStat('rounds', 1);
           speak('Yes! ' + currentText);
           setTimeout(startRound, 1800);
         } else {

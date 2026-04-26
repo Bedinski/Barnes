@@ -1,8 +1,22 @@
 // Star reward component. Persists count in localStorage and animates
 // a fly-up star at the source coordinates so the child sees their reward
 // "come from" wherever they tapped.
+//
+// Every awarded star also bumps the badges-system "starsAwarded" stat so
+// the Star Saver badge fires correctly. Imported lazily to avoid a circular
+// dependency (badges.js → stars.js for rewardStar).
 
 const KEY = 'kpr.stars';
+
+let bumpStatRef = null;
+async function ensureBumpStat() {
+  if (bumpStatRef) return bumpStatRef;
+  try {
+    const mod = await import('./badges.js');
+    bumpStatRef = mod.bumpStat;
+  } catch (_) { bumpStatRef = () => {}; }
+  return bumpStatRef;
+}
 
 export function getStarCount() {
   try {
@@ -45,6 +59,8 @@ export function rewardStar(opts = {}) {
   setTimeout(() => el.remove(), 1200);
 
   document.dispatchEvent(new CustomEvent('stars:changed', { detail: { count: next } }));
+  // Fire-and-forget bump of the badges stat (won't block rendering).
+  ensureBumpStat().then((bump) => bump('starsAwarded', 1));
   return next;
 }
 

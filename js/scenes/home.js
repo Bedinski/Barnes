@@ -1,15 +1,26 @@
-// Home screen — primary focus is Books; two practice modes reinforce
-// the same vocabulary the child sees while reading.
+// Home screen.
+//
+// Primary card: Read a Book.
+// Three practice modes reinforce the same vocabulary the books use:
+//   - Match the Words   (phrase → picture)
+//   - Build a Sentence  (tile assembly)
+//   - Fill the Blank    (cloze sentence reading)
+//
+// Topbar surfaces the streak chip + earned badges so the child sees
+// their progress every time they come back.
 
 import { buildKoala } from '../characters/koala.js';
 import { buildPanda } from '../characters/panda.js';
 import { attach as animate } from '../characters/animator.js';
-import { buildStarCounter } from '../components/stars.js';
+import { buildStarCounter }  from '../components/stars.js';
+import { buildBadgeGallery } from '../components/badges.js';
+import { buildStreakChip }   from '../components/streak.js';
 import { speak } from '../audio/speech.js';
 import { tap as tapSound } from '../audio/sounds.js';
 
 const MODES = [
   { id: 'library',       label: '📚 Read a Book',     character: 'koala', accessory: 'leaf',   variant: 'classic', primary: true  },
+  { id: 'cloze',         label: '🧠 Fill the Blank',  character: 'koala', accessory: null,     variant: 'warm',    primary: false },
   { id: 'wordPicture',   label: '🧩 Match the Words', character: 'panda', accessory: 'bamboo', variant: 'classic', primary: false },
   { id: 'buildSentence', label: '✍️ Build a Sentence',character: 'panda', accessory: 'bow',    variant: 'pinky',   primary: false },
 ];
@@ -25,8 +36,12 @@ export function mount(container, ctx) {
   title.className = 'title';
   title.textContent = 'Koala & Panda Reading';
   top.appendChild(title);
+  top.appendChild(buildStreakChip());
   top.appendChild(buildStarCounter());
   scene.appendChild(top);
+
+  const gallery = buildBadgeGallery();
+  scene.appendChild(gallery);
 
   const grid = document.createElement('div');
   grid.className = 'home-grid';
@@ -56,7 +71,7 @@ export function mount(container, ctx) {
 
     const h = animate(charSvg);
     handles.push(h);
-    setTimeout(() => h.wave(), 350 + i * 250);
+    setTimeout(() => h.wave(), 350 + i * 220);
 
     const go = () => {
       tapSound();

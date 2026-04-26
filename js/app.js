@@ -7,10 +7,12 @@ import * as library       from './scenes/library.js';
 import * as reader        from './scenes/reader.js';
 import * as wordPicture   from './scenes/wordPicture.js';
 import * as buildSentence from './scenes/buildSentence.js';
+import * as cloze         from './scenes/cloze.js';
 import { cancelSpeech }   from './audio/speech.js';
+import { tickStreak }     from './components/streak.js';
 
 const SCENES = {
-  home, library, reader, wordPicture, buildSentence,
+  home, library, reader, wordPicture, buildSentence, cloze,
 };
 
 export function createApp(container) {
@@ -31,5 +33,8 @@ export function createApp(container) {
 }
 
 if (typeof document !== 'undefined' && document.getElementById('app')) {
+  // Tick the daily reading streak the moment the app boots — opening
+  // the app counts as showing up to read.
+  try { tickStreak(); } catch (_) { /* noop */ }
   createApp(document.getElementById('app'));
 }
