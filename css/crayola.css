@@ -123,38 +123,33 @@
 }
 
 /* Hotspot = a tappable place on the map. SVG <g> with .hotspot.
-   Important: we apply NO transform, NO filter, and NO transition to
-   the parent <g> itself. Any of those can re-rasterize or briefly
-   shift the hit-test region of the SVG group, causing the cursor to
-   fall outside the bubble, ending hover, then re-entering — visually
-   a seizure-like stutter. Instead all hover / press feedback lives on
-   CHILD elements (the colored bubble + the inner cream ring), changed
-   via properties (fill, stroke-width, opacity) that don't move the
-   group at all. */
+   Two earlier hover-stutter fixes (transform → filter → child-only
+   stroke-width transition) didn't fully kill the seizure flicker. The
+   remaining triggers we're killing here, all at once:
+     1. The bubble's filter="url(#crayon-edge)" wobbles the rendered
+        edge via feDisplacementMap. Default SVG hit-testing
+        (pointer-events: visiblePainted) tests the rendered shape, so
+        with cursor near the wobbly edge the hit-test result oscillates.
+        Removed the filter from the bubble (kept on hand-drawn
+        characters elsewhere where there's no hit-test sensitivity).
+     2. Any animated property on .hotspot-bubble (stroke-width
+        transition) re-renders the filtered shape on every frame.
+        Removed all bubble transitions.
+     3. .map-cloud had an infinite alternate animation in the same
+        SVG; that forced periodic compositing passes that can briefly
+        reorder hit-test regions. Removed the continuous animation.
+   Net result: hover does nothing visually — just cursor:pointer. Tap
+   feedback is opacity dim on press. The hit-test region is a static
+   geometric circle that can't oscillate. */
 .world-map .hotspot {
   cursor: pointer;
 }
 .world-map .hotspot:focus { outline: none; }
-.world-map .hotspot:focus-visible .hotspot-bubble {
-  stroke: var(--c-blue);
-  stroke-width: 6;
-}
 
 .world-map .hotspot-bubble {
-  /* The big colored disk under each place. */
+  /* The big colored disk under each place. No filter, no transition —
+     a static fill+stroke circle, so the hit-test region is locked. */
   filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.08));
-  transition: stroke-width 120ms ease-out;
-}
-/* Hover feedback: thicken the bubble outline + brighten the cream
-   center. No transform, no filter change on the group. */
-.world-map .hotspot:hover .hotspot-bubble {
-  stroke-width: 6;
-}
-.world-map .hotspot:hover .hotspot-inner {
-  opacity: 1;
-}
-.world-map .hotspot-inner {
-  transition: opacity 120ms ease-out;
 }
 /* Pressed (mousedown / touch): briefly dim the bubble so the tap is
    visible. opacity is a pure-repaint property — no layout, no
@@ -260,21 +255,11 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-.world-map .map-svg .map-cloud {
-  animation: cloud-drift 60s ease-in-out infinite alternate;
-}
-@keyframes cloud-drift {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-40px); }
-}
-/* The two cloud groups are translated by the inline transform on the
-   <g>; the keyframe above adds an extra X offset on top, which is
-   additive in SVG. We override per-cloud so each drifts a different
-   amount and direction. */
-.world-map .map-svg .map-parallax--sky g.map-cloud:nth-of-type(2) {
-  animation-direction: alternate-reverse;
-  animation-duration: 80s;
-}
+/* Clouds are intentionally STATIC. An earlier infinite cloud-drift
+   animation in the same SVG as the hotspots forced periodic
+   compositing passes that interacted with the hover hit-test, helping
+   trigger the bubble flicker. Static clouds are still pretty and
+   battery-friendly. */
 
 /* Hotspot inner cream ring + custom SVG icon scaffolding.
    The icon is an <svg> nested inside a <g> wrapper that translates +
@@ -295,11 +280,9 @@
   .ambient-sparkle,
   .world-map .map-svg .map-parallax--far,
   .world-map .map-svg .map-parallax--near,
-  .world-map .map-svg .map-parallax--sky,
-  .world-map .map-svg .map-cloud {
+  .world-map .map-svg .map-parallax--sky {
     animation: none;
   }
-  .world-map .hotspot { transition: none; }
 }
 
 /* -------- Buddy corner (Phase B) --------

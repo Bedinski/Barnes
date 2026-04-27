@@ -57,13 +57,16 @@ function buildHotspot(spot) {
     transform: `translate(${spot.cx} ${spot.cy})`,
   });
   // The big colored disk under each place.
+  // No SVG filter here — the crayon-edge displacement filter causes
+  // hover hit-test oscillation when the cursor is near the wobbly
+  // rendered edge. Hand-drawn feel comes from the inner ring + icon
+  // detail instead.
   el('circle', {
     class: 'hotspot-bubble',
     cx: 0, cy: 0, r: 60,
     fill: spot.color,
     stroke: 'var(--c-ink)',
     'stroke-width': 4,
-    filter: 'url(#crayon-edge)',
   }, g);
   // Inner cream ring so the icon sits on a lighter background and the
   // colored disk reads as a frame, not a flat fill.
