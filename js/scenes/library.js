@@ -15,6 +15,7 @@ import { buildKoala } from '../characters/koala.js';
 import { buildPanda } from '../characters/panda.js';
 import { attach as animate } from '../characters/animator.js';
 import { buildStarCounter } from '../components/stars.js';
+import { BuddyCorner } from '../components/buddy.js';
 import { speak } from '../audio/speech.js';
 import { tap as tapSound } from '../audio/sounds.js';
 
@@ -57,6 +58,9 @@ export function mount(container, ctx) {
   top.appendChild(title);
   top.appendChild(buildStarCounter());
   scene.appendChild(top);
+
+  // Phase B: chibi buddy floats in the corner of every screen.
+  scene.appendChild(BuddyCorner({ size: 'chibi' }));
 
   const mapBody = document.createElement('div');
   mapBody.className = 'map-body';

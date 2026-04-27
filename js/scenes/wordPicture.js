@@ -6,6 +6,7 @@ import { SENTENCES } from '../data/sentences.js';
 import { allBookPhrases } from '../data/books.js';
 import { buildScene, listScenes } from '../characters/sceneArt.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';
+import { BuddyCorner } from '../components/buddy.js';
 import { bumpStat } from '../components/badges.js';
 import { speak } from '../audio/speech.js';
 import { success, tryAgain, tap as tapSound } from '../audio/sounds.js';
@@ -50,6 +51,7 @@ export function mount(container, ctx) {
   top.appendChild(buildStarCounter());
   top.appendChild(hear);
   scene.appendChild(top);
+  scene.appendChild(BuddyCorner({ size: 'chibi' }));
 
   const sentenceEl = document.createElement('div');
   sentenceEl.className = 'prompt';

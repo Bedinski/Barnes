@@ -11,9 +11,12 @@ import * as buildSentence from './scenes/buildSentence.js';
 import * as cloze         from './scenes/cloze.js';
 import * as parent        from './scenes/parent.js';
 import * as phonics       from './scenes/phonics.js';
+import * as onboarding    from './scenes/onboarding.js';
+import * as closet        from './scenes/closet.js';
 import { cancelSpeech }   from './audio/speech.js';
 import { tickStreak }     from './components/streak.js';
 import { mountSvgFilters } from './components/svgFilters.js';
+import { hasBuddy }        from './components/buddy.js';
 
 // Phase A: the world-map hub is the new home. We alias 'home' →
 // worldMap so all the existing "Back to Home" buttons in other scenes
@@ -24,6 +27,7 @@ const SCENES = {
   home: worldMap,
   worldMap,
   library, reader, wordPicture, buildSentence, cloze, parent, phonics,
+  onboarding, closet,
   // Keep the legacy card grid reachable for diagnostics.
   homeLegacy: home,
 };
@@ -41,7 +45,9 @@ export function createApp(container) {
       currentUnmount = scene.mount(container, ctx, data) || null;
     },
   };
-  ctx.navigate('home');
+  // First-launch UX: if the kid has never picked a buddy, send them
+  // to onboarding. Otherwise straight to the world-map hub.
+  ctx.navigate(hasBuddy() ? 'home' : 'onboarding');
   return ctx;
 }
 

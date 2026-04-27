@@ -119,12 +119,18 @@ test('"Read to me" button speaks the page and highlights words', async () => {
   unmount();
 });
 
-test('reader renders a narrator koala in the corner of the page art', () => {
+test('reader renders a narrator buddy in the corner of the page art', () => {
   const ctx = { navigate: () => {} };
   const root = document.getElementById('app');
   const unmount = mount(root, ctx, { bookId: BOOKS[0].id });
-  const narrator = root.querySelector('.narrator-slot .character.koala');
-  assert.ok(narrator, 'narrator koala should be present on every reader page');
+  // Phase B: the narrator is the kid's chosen buddy (koala or panda).
+  // The default buddy when nothing is saved is a classic koala.
+  const narrator = root.querySelector('.narrator-slot .character');
+  assert.ok(narrator, 'a narrator buddy should be present on every reader page');
+  assert.ok(
+    narrator.classList.contains('koala') || narrator.classList.contains('panda'),
+    'narrator should be a koala or panda',
+  );
   unmount();
 });
 

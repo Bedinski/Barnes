@@ -9,6 +9,7 @@
 import { getBook, BOOKS } from '../data/books.js';
 import { buildScene } from '../characters/sceneArt.js';
 import { buildKoala } from '../characters/koala.js';
+import { buildBuddy } from '../components/buddy.js';
 import { attach as animate } from '../characters/animator.js';
 import { makeSceneInteractive } from '../characters/interactive.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';
@@ -185,10 +186,13 @@ export function mount(container, ctx, data = {}) {
     if (interactiveCleanup) interactiveCleanup();
     interactiveCleanup = makeSceneInteractive(sceneSvg);
 
-    // Tiny narrator koala peeks out of the bottom-left, reactive during reads.
+    // Tiny narrator buddy peeks out of the bottom-left, reactive during reads.
+    // Phase B: this is the kid's chosen buddy. The CSS class
+    // .narrator-koala is preserved so existing tests continue to find the
+    // narrator slot regardless of species.
     const narratorWrap = document.createElement('div');
     narratorWrap.className = 'narrator-slot';
-    const narrator = buildKoala({ size: 'chibi', accessory: 'leaf' });
+    const narrator = buildBuddy({ size: 'chibi' });
     narratorWrap.appendChild(narrator);
     art.appendChild(narratorWrap);
     if (narratorHandle) narratorHandle.detach();

@@ -14,6 +14,7 @@
 
 import { FAMILIES, getFamily, phonemeFor } from '../data/phonics.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';
+import { BuddyCorner } from '../components/buddy.js';
 import { bumpStat } from '../components/badges.js';
 import { speak } from '../audio/speech.js';
 import { success, tryAgain, tap as tapSound } from '../audio/sounds.js';
@@ -46,6 +47,7 @@ export function mount(container, ctx) {
   top.appendChild(title);
   top.appendChild(buildStarCounter());
   scene.appendChild(top);
+  scene.appendChild(BuddyCorner({ size: 'chibi' }));
 
   const body = document.createElement('div');
   body.className = 'phonics-body';

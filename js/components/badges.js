@@ -86,6 +86,17 @@ export function checkBadges(stats = getStats()) {
     setEarnedBadgeIds([...earned]);
     document.dispatchEvent(new CustomEvent('badges:earned', { detail: { badges: fresh } }));
     showBadgeToasts(fresh);
+    // Phase B: each new badge may also unlock a buddy accessory.
+    // Dynamic import avoids a static cycle: buddy.js → badges.js
+    // (for getStats) and now badges.js → buddy.js (for unlock).
+    import('./buddy.js').then((m) => {
+      import('../data/accessories.js').then(({ BADGE_TO_ACCESSORY }) => {
+        for (const b of fresh) {
+          const accId = BADGE_TO_ACCESSORY?.[b.id];
+          if (accId) m.unlockAccessory(accId);
+        }
+      }).catch(() => {});
+    }).catch(() => {});
   }
   return fresh;
 }

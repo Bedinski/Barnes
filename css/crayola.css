@@ -181,3 +181,163 @@
   .ambient-drift { animation: none; }
   .world-map .hotspot { transition: none; }
 }
+
+/* -------- Buddy corner (Phase B) --------
+   A floating chibi version of the kid's reading buddy. Pinned to a
+   corner of the active scene so the buddy is always present without
+   stealing focus. Animator drives the same idle breathing/blinking.
+   The hosting scene is responsible for being position:relative or
+   appending the corner to a positioned ancestor — most .scene rules
+   already establish a stacking context. */
+.buddy-corner {
+  position: fixed;
+  z-index: 5;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.06));
+  opacity: 0.95;
+}
+.buddy-corner svg.character { width: 100%; height: 100%; display: block; }
+.buddy-corner--bottom-right { right: 12px; bottom: 12px; }
+.buddy-corner--bottom-left  { left:  12px; bottom: 12px; }
+.buddy-corner--top-right    { right: 12px; top:    96px; }
+
+/* -------- Onboarding -------- */
+.scene.onboarding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 18px 14px env(safe-area-inset-bottom);
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.onb-stage {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.onb-prompt { text-align: center; margin: 8px 0; }
+.onb-character {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  min-height: 240px;
+}
+.onb-character svg.character {
+  width: 200px;
+  height: auto;
+}
+.onb-choices {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+.onb-choice {
+  min-width: var(--tap);
+  min-height: var(--tap);
+  padding: 12px 20px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  background: #fff;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 120ms ease;
+}
+.onb-choice:hover  { transform: translateY(-2px); }
+.onb-choice:active { transform: translateY(0); }
+.onb-choice.is-selected { background: var(--c-yellow); }
+
+.onb-name-display {
+  font-size: clamp(36px, 8vw, 56px);
+  text-align: center;
+  margin: 8px 0;
+  color: var(--c-purple);
+}
+.onb-name-btn {
+  min-width: 88px;
+  padding: 10px 16px;
+  font-family: var(--font-display);
+  background: #fff;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  font-size: 18px;
+}
+.onb-name-btn.is-selected { background: var(--c-pink); color: #fff; }
+.onb-surprise {
+  background: #fff;
+  border: none;
+  border-radius: 18px;
+  padding: 10px 16px;
+  font-family: var(--font);
+  cursor: pointer;
+  font-size: 18px;
+}
+.onb-done-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+.onb-done {
+  font-size: 22px;
+  padding: 14px 28px;
+}
+
+/* -------- Closet -------- */
+.scene.closet {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px env(safe-area-inset-bottom);
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.closet-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.closet-preview {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  min-height: 260px;
+}
+.closet-preview svg.character { width: 200px; height: auto; }
+.closet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 720px;
+}
+.closet-cell {
+  --crayon-color: var(--c-orange);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  font-family: var(--font);
+  min-height: 110px;
+}
+.closet-cell.is-locked { opacity: 0.55; cursor: default; }
+.closet-cell.is-equipped { background: #ecffea; }
+.cell-glyph { font-size: 28px; line-height: 1; }
+.cell-label { font-family: var(--font-display); font-size: 16px; }
+.cell-hint  { font-size: 12px; color: #666; }

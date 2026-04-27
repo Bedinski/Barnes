@@ -5,17 +5,32 @@ import assert from 'node:assert/strict';
 import { createApp } from '../js/app.js';
 import { BOOKS } from '../js/data/books.js';
 import { _resetAnimator } from '../js/characters/animator.js';
+import { setBuddy, _resetBuddy } from '../js/components/buddy.js';
 
 beforeEach(() => {
   _resetAnimator();
   document.body.innerHTML = '<div id="app"></div>';
   globalThis.localStorage.clear();
+  _resetBuddy();
 });
 
-test('createApp() mounts the home (world-map) scene immediately', () => {
+// Helper — seed a saved buddy so createApp boots straight into the
+// world-map hub (Phase B routes first-launch users to onboarding).
+function seedBuddy() {
+  setBuddy({ species: 'koala', variant: 'classic', accessory: 'leaf', name: 'Koko' });
+}
+
+test('createApp() routes to onboarding on first launch (no saved buddy)', () => {
   const root = document.getElementById('app');
   createApp(root);
-  // Phase A: the home slot is now the world-map hub.
+  assert.ok(root.querySelector('.scene.onboarding'),
+    'first-launch boot should land in onboarding');
+});
+
+test('createApp() routes to the world-map hub when a buddy is saved', () => {
+  seedBuddy();
+  const root = document.getElementById('app');
+  createApp(root);
   assert.ok(root.querySelector('.scene.world-map'));
 });
 

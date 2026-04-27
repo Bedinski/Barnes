@@ -9,7 +9,7 @@
 // The buddy on the hub is rendered with the existing buildKoala. Phase
 // B will swap this for buildBuddy() so the kid's chosen buddy appears.
 
-import { buildKoala } from '../characters/koala.js';
+import { buildBuddy } from '../components/buddy.js';
 import { attach as animate } from '../characters/animator.js';
 import { buildStarCounter }   from '../components/stars.js';
 import { buildStreakChip }    from '../components/streak.js';
@@ -30,7 +30,8 @@ const HOTSPOTS = [
   { id: 'cloze',         label: 'Fill In',   route: 'cloze',         cx: 200, cy: 480, color: 'var(--c-purple)', emoji: '🧠' },
   { id: 'wordPicture',   label: 'Match',     route: 'wordPicture',   cx: 800, cy: 480, color: 'var(--c-green)',  emoji: '🧩' },
   { id: 'buildSentence', label: 'Build',     route: 'buildSentence', cx: 500, cy: 80,  color: 'var(--c-pink)',   emoji: '✍️' },
-  { id: 'stickerBook',   label: 'Stickers',  route: null /* Phase C */, cx: 500, cy: 580, color: 'var(--c-yellow)', emoji: '🌟' },
+  { id: 'stickerBook',   label: 'Stickers',  route: null /* Phase C */, cx: 350, cy: 580, color: 'var(--c-yellow)', emoji: '🌟' },
+  { id: 'closet',        label: 'Closet',    route: 'closet',        cx: 650, cy: 580, color: 'var(--c-red)',    emoji: '🎒' },
 ];
 
 function el(tag, attrs = {}, parent = null) {
@@ -157,16 +158,29 @@ export function mount(container, ctx) {
   // The koala SVG is sized in pixels, so we wrap-and-scale via a foreignObject-free trick:
   // the koala builder returns a self-contained <svg>; we drop it inside a <g> and rely on
   // its intrinsic 220×260 box. Center it on (0,0) inside the group.
-  const koalaSvg = buildKoala({ accessory: 'leaf', variant: 'classic', size: 'tall' });
-  // Move the koala so its center is at the group origin. The builder
-  // sizes 'tall' at roughly 220×260; offset half each.
-  const KOALA_W = 220, KOALA_H = 260;
-  const wrap = el('g', { transform: `translate(${-KOALA_W / 2} ${-KOALA_H / 2})` }, buddyG);
-  wrap.appendChild(koalaSvg);
+  // Buddy = the kid's chosen reading companion (Phase B). Defaults to
+  // a classic koala with a leaf when nothing is saved yet.
+  let buddySvg = buildBuddy({ size: 'tall' });
+  // The builder sizes 'tall' at roughly 220×260; center it on the group origin.
+  const BUDDY_W = 220, BUDDY_H = 260;
+  let wrap = el('g', { transform: `translate(${-BUDDY_W / 2} ${-BUDDY_H / 2})` }, buddyG);
+  wrap.appendChild(buddySvg);
   svg.appendChild(buddyG);
 
-  const animHandle = animate(koalaSvg);
+  let animHandle = animate(buddySvg);
   setTimeout(() => animHandle.wave(), 350);
+
+  // Re-render the buddy when the kid edits in the closet so the hub
+  // immediately reflects the change on return.
+  const onBuddyChanged = () => {
+    try { animHandle.detach(); } catch (_) {}
+    wrap.remove();
+    buddySvg = buildBuddy({ size: 'tall' });
+    wrap = el('g', { transform: `translate(${-BUDDY_W / 2} ${-BUDDY_H / 2})` }, buddyG);
+    wrap.appendChild(buddySvg);
+    animHandle = animate(buddySvg);
+  };
+  document.addEventListener('buddy:changed', onBuddyChanged);
 
   // Ambient drifters (butterfly + leaf). Detach on unmount.
   const detachAmbient = attachAmbient(scene);
@@ -217,6 +231,7 @@ export function mount(container, ctx) {
     clearTimeout(speakTimer);
     if (walkHandle) walkHandle.cancel();
     handlerCleanups.forEach((fn) => fn());
+    document.removeEventListener('buddy:changed', onBuddyChanged);
     try { animHandle.detach(); } catch (_) { /* noop */ }
     try { detachAmbient(); } catch (_) { /* noop */ }
   };

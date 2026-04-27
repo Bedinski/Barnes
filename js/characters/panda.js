@@ -105,6 +105,37 @@ export function buildPanda({ variant = 'classic', size = 'medium', accessory = n
           <path d="M 64 60 L 50 60 L 56 50 Z" fill="#ff5d8f" />
         </g>
       ` : ''}
+      ${accessory === 'crown' ? `
+        <g class="accessory crown">
+          <path d="M 64 50 L 76 26 L 88 44 L 100 18 L 112 44 L 124 26 L 136 50 Z" fill="#ffd23f" stroke="#a07b00" stroke-width="2" stroke-linejoin="round" />
+          <circle cx="100" cy="36" r="3.5" fill="#ef3e3e" />
+          <circle cx="80"  cy="44" r="2.5" fill="#3aa6ff" />
+          <circle cx="120" cy="44" r="2.5" fill="#54c45e" />
+        </g>
+      ` : ''}
+      ${accessory === 'glasses' ? `
+        <g class="accessory glasses">
+          <circle cx="78"  cy="100" r="11" fill="none" stroke="${tone.dark}" stroke-width="3" />
+          <circle cx="122" cy="100" r="11" fill="none" stroke="${tone.dark}" stroke-width="3" />
+          <line x1="89" y1="100" x2="111" y2="100" stroke="${tone.dark}" stroke-width="3" />
+        </g>
+      ` : ''}
+      ${accessory === 'scarf' ? `
+        <g class="accessory scarf">
+          <path d="M 56 152 Q 100 168 144 152 Q 144 168 100 174 Q 56 168 56 152 Z" fill="#3aa6ff" />
+          <path d="M 132 168 L 152 200 L 138 200 Z" fill="#2378c8" />
+        </g>
+      ` : ''}
+      ${accessory === 'flower' ? `
+        <g class="accessory flower">
+          <circle cx="58" cy="52" r="6" fill="#ff77b1" />
+          <circle cx="64" cy="44" r="6" fill="#ff77b1" />
+          <circle cx="74" cy="48" r="6" fill="#ff77b1" />
+          <circle cx="70" cy="58" r="6" fill="#ff77b1" />
+          <circle cx="60" cy="62" r="6" fill="#ff77b1" />
+          <circle cx="66" cy="52" r="3" fill="#ffd23f" />
+        </g>
+      ` : ''}
     </g>
   `;
 

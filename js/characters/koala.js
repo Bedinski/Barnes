@@ -102,6 +102,37 @@ export function buildKoala({ variant = 'classic', size = 'medium', accessory = n
           <path d="M 70 50 Q 100 -2 130 50 Z" fill="#d23b3b" />
         </g>
       ` : ''}
+      ${accessory === 'crown' ? `
+        <g class="accessory crown">
+          <path d="M 64 56 L 76 32 L 88 50 L 100 24 L 112 50 L 124 32 L 136 56 Z" fill="#ffd23f" stroke="#a07b00" stroke-width="2" stroke-linejoin="round" />
+          <circle cx="100" cy="42" r="3.5" fill="#ef3e3e" />
+          <circle cx="80"  cy="50" r="2.5" fill="#3aa6ff" />
+          <circle cx="120" cy="50" r="2.5" fill="#54c45e" />
+        </g>
+      ` : ''}
+      ${accessory === 'glasses' ? `
+        <g class="accessory glasses">
+          <circle cx="78"  cy="100" r="14" fill="none" stroke="#1a1a1a" stroke-width="3" />
+          <circle cx="122" cy="100" r="14" fill="none" stroke="#1a1a1a" stroke-width="3" />
+          <line x1="92" y1="100" x2="108" y2="100" stroke="#1a1a1a" stroke-width="3" />
+        </g>
+      ` : ''}
+      ${accessory === 'scarf' ? `
+        <g class="accessory scarf">
+          <path d="M 56 152 Q 100 168 144 152 Q 144 168 100 174 Q 56 168 56 152 Z" fill="#a672ff" />
+          <path d="M 132 168 L 152 200 L 138 200 Z" fill="#7b4dd0" />
+        </g>
+      ` : ''}
+      ${accessory === 'flower' ? `
+        <g class="accessory flower">
+          <circle cx="58" cy="58" r="6" fill="#ff77b1" />
+          <circle cx="64" cy="50" r="6" fill="#ff77b1" />
+          <circle cx="74" cy="54" r="6" fill="#ff77b1" />
+          <circle cx="70" cy="64" r="6" fill="#ff77b1" />
+          <circle cx="60" cy="68" r="6" fill="#ff77b1" />
+          <circle cx="66" cy="58" r="3" fill="#ffd23f" />
+        </g>
+      ` : ''}
     </g>
   `;
 
