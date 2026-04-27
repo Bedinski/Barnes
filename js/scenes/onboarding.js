@@ -11,7 +11,7 @@
 // onboarding to 3 steps respects the "no-text required" Crayola rule
 // (each step is a single tap with voice narration).
 
-import { setBuddy, NAME_SUGGESTIONS } from '../components/buddy.js';
+import { setBuddy, NAME_SUGGESTIONS } from '../components/buddy.js?v=3';
 import { buildKoala } from '../characters/koala.js';
 import { buildPanda } from '../characters/panda.js';
 import { attach as animate } from '../characters/animator.js';

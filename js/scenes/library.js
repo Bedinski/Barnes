@@ -15,7 +15,7 @@ import { buildKoala } from '../characters/koala.js';
 import { buildPanda } from '../characters/panda.js';
 import { attach as animate } from '../characters/animator.js';
 import { buildStarCounter } from '../components/stars.js';
-import { BuddyCorner } from '../components/buddy.js';
+import { BuddyCorner } from '../components/buddy.js?v=3';
 import { speak } from '../audio/speech.js';
 import { tap as tapSound } from '../audio/sounds.js';
 

@@ -117,7 +117,8 @@ export function unlockAccessory(id) {
 
 // ---------- Renderers ----------
 const SIZE_DIMS = {
-  chibi:  { w: 110, h: 132 },
+  chibi:  { w: 72,  h: 86  },
+  small:  { w: 110, h: 132 },
   medium: { w: 170, h: 198 },
   tall:   { w: 220, h: 260 },
 };
@@ -138,7 +139,7 @@ export function buildBuddy({ size = 'medium', overrides = {} } = {}) {
   return b.species === 'panda' ? buildPanda(opts) : buildKoala(opts);
 }
 
-export function BuddyCorner({ size = 'chibi', position = 'bottom-right' } = {}) {
+export function BuddyCorner({ size = 'chibi', position = 'top-right' } = {}) {
   const wrap = document.createElement('div');
   wrap.className = `buddy-corner buddy-corner--${position} size-${size}`;
   wrap.setAttribute('aria-hidden', 'true');

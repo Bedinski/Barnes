@@ -9,7 +9,7 @@
 import { getBook, BOOKS } from '../data/books.js';
 import { buildScene } from '../characters/sceneArt.js';
 import { buildKoala } from '../characters/koala.js';
-import { buildBuddy } from '../components/buddy.js';
+import { buildBuddy } from '../components/buddy.js?v=3';
 import { attach as animate } from '../characters/animator.js';
 import { makeSceneInteractive } from '../characters/interactive.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';

@@ -71,6 +71,97 @@ export function mountSvgFilters(doc = (typeof document !== 'undefined' ? documen
   crayon.appendChild(cDisp);
   defs.appendChild(crayon);
 
+  // Soft drop shadow used by the world-map hotspots so they read as
+  // little 3D buttons floating above the watercolor backdrop.
+  const dropShadow = doc.createElementNS(SVG_NS, 'filter');
+  dropShadow.setAttribute('id', 'soft-shadow');
+  dropShadow.setAttribute('x', '-20%');
+  dropShadow.setAttribute('y', '-20%');
+  dropShadow.setAttribute('width', '140%');
+  dropShadow.setAttribute('height', '140%');
+  const sBlur = doc.createElementNS(SVG_NS, 'feGaussianBlur');
+  sBlur.setAttribute('in', 'SourceAlpha');
+  sBlur.setAttribute('stdDeviation', '3');
+  sBlur.setAttribute('result', 'sblur');
+  const sOffset = doc.createElementNS(SVG_NS, 'feOffset');
+  sOffset.setAttribute('in', 'sblur');
+  sOffset.setAttribute('dx', '0');
+  sOffset.setAttribute('dy', '4');
+  sOffset.setAttribute('result', 'soffset');
+  const sFlood = doc.createElementNS(SVG_NS, 'feFlood');
+  sFlood.setAttribute('flood-color', '#000');
+  sFlood.setAttribute('flood-opacity', '0.18');
+  const sComp = doc.createElementNS(SVG_NS, 'feComposite');
+  sComp.setAttribute('in2', 'soffset');
+  sComp.setAttribute('operator', 'in');
+  sComp.setAttribute('result', 'shadow');
+  const sMerge = doc.createElementNS(SVG_NS, 'feMerge');
+  const sMergeNode1 = doc.createElementNS(SVG_NS, 'feMergeNode');
+  sMergeNode1.setAttribute('in', 'shadow');
+  const sMergeNode2 = doc.createElementNS(SVG_NS, 'feMergeNode');
+  sMergeNode2.setAttribute('in', 'SourceGraphic');
+  sMerge.appendChild(sMergeNode1);
+  sMerge.appendChild(sMergeNode2);
+  dropShadow.appendChild(sBlur);
+  dropShadow.appendChild(sOffset);
+  dropShadow.appendChild(sFlood);
+  dropShadow.appendChild(sComp);
+  dropShadow.appendChild(sMerge);
+  defs.appendChild(dropShadow);
+
+  // Reusable radial gradients give every flat fill a "lit-from-above"
+  // sheen so the world-map bubbles read as 3D-ish balls instead of flat
+  // discs. Each gradient is referenced by id from the hotspot drawer.
+  const GRADIENTS = [
+    { id: 'g-orange', a: '#ffba6c', b: '#ff8a3d', c: '#cc5d18' },
+    { id: 'g-blue',   a: '#7fc6ff', b: '#3aa6ff', c: '#1576d4' },
+    { id: 'g-purple', a: '#cca6ff', b: '#a672ff', c: '#7142cc' },
+    { id: 'g-green',  a: '#9ee2a5', b: '#54c45e', c: '#2e8a37' },
+    { id: 'g-pink',   a: '#ffb1cf', b: '#ff77b1', c: '#cc4a85' },
+    { id: 'g-yellow', a: '#ffe480', b: '#ffd23f', c: '#cc9d00' },
+    { id: 'g-red',    a: '#ff8b8b', b: '#ef3e3e', c: '#a02020' },
+  ];
+  for (const g of GRADIENTS) {
+    const rg = doc.createElementNS(SVG_NS, 'radialGradient');
+    rg.setAttribute('id', g.id);
+    rg.setAttribute('cx', '35%');
+    rg.setAttribute('cy', '30%');
+    rg.setAttribute('r', '70%');
+    rg.setAttribute('fx', '30%');
+    rg.setAttribute('fy', '25%');
+    const s1 = doc.createElementNS(SVG_NS, 'stop');
+    s1.setAttribute('offset', '0%');
+    s1.setAttribute('stop-color', g.a);
+    const s2 = doc.createElementNS(SVG_NS, 'stop');
+    s2.setAttribute('offset', '60%');
+    s2.setAttribute('stop-color', g.b);
+    const s3 = doc.createElementNS(SVG_NS, 'stop');
+    s3.setAttribute('offset', '100%');
+    s3.setAttribute('stop-color', g.c);
+    rg.appendChild(s1);
+    rg.appendChild(s2);
+    rg.appendChild(s3);
+    defs.appendChild(rg);
+  }
+
+  // Linear sky gradient used as the world-map backdrop inside the SVG.
+  const sky = doc.createElementNS(SVG_NS, 'linearGradient');
+  sky.setAttribute('id', 'g-sky-meadow');
+  sky.setAttribute('x1', '0'); sky.setAttribute('y1', '0');
+  sky.setAttribute('x2', '0'); sky.setAttribute('y2', '1');
+  for (const stop of [
+    { o: '0%',  c: '#fff7e8' },
+    { o: '45%', c: '#ffeec0' },
+    { o: '70%', c: '#ffe1a8' },
+    { o: '100%',c: '#ffd388' },
+  ]) {
+    const s = doc.createElementNS(SVG_NS, 'stop');
+    s.setAttribute('offset', stop.o);
+    s.setAttribute('stop-color', stop.c);
+    sky.appendChild(s);
+  }
+  defs.appendChild(sky);
+
   svg.appendChild(defs);
   doc.body.appendChild(svg);
   return svg;
