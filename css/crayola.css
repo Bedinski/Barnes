@@ -176,6 +176,15 @@
   transform-origin: center;
   will-change: transform;
 }
+/* Override the global .character { width: 100% } rule — that rule is
+   sized for HTML containers, but inside the world-map's outer SVG the
+   percentage resolves against the 1000-unit viewBox, blowing the
+   buddy up to half the screen. Pin to explicit user units here. */
+.world-map .map-svg .map-buddy svg.character {
+  width: 220px;
+  max-width: 220px;
+  height: 260px;
+}
 
 /* Ambient drifting butterflies / leaves.
    The drifter <span> hosts a small inline <svg>, sized via .ambient-svg

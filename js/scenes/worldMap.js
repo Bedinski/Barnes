@@ -256,9 +256,14 @@ export function mount(container, ctx) {
   // its intrinsic 220×260 box. Center it on (0,0) inside the group.
   // Buddy = the kid's chosen reading companion (Phase B). Defaults to
   // a classic koala with a leaf when nothing is saved yet.
-  let buddySvg = buildBuddy({ size: 'tall' });
-  // The builder sizes 'tall' at roughly 220×260; center it on the group origin.
+  // Force explicit pixel dimensions on the inner <svg>. Without these,
+  // the nested SVG inherits 100% of its containing block, which inside
+  // an outer <svg>/<g> causes the buddy to scale up to the entire
+  // viewport — giant koala covering half the world map.
   const BUDDY_W = 220, BUDDY_H = 260;
+  let buddySvg = buildBuddy({ size: 'tall' });
+  buddySvg.setAttribute('width',  String(BUDDY_W));
+  buddySvg.setAttribute('height', String(BUDDY_H));
   let wrap = el('g', { transform: `translate(${-BUDDY_W / 2} ${-BUDDY_H / 2})` }, buddyG);
   wrap.appendChild(buddySvg);
   svg.appendChild(buddyG);
@@ -272,6 +277,8 @@ export function mount(container, ctx) {
     try { animHandle.detach(); } catch (_) {}
     wrap.remove();
     buddySvg = buildBuddy({ size: 'tall' });
+    buddySvg.setAttribute('width',  String(BUDDY_W));
+    buddySvg.setAttribute('height', String(BUDDY_H));
     wrap = el('g', { transform: `translate(${-BUDDY_W / 2} ${-BUDDY_H / 2})` }, buddyG);
     wrap.appendChild(buddySvg);
     animHandle = animate(buddySvg);
