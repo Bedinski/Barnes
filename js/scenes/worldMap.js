@@ -16,6 +16,7 @@ import { buildStreakChip }    from '../components/streak.js';
 import { buildSettingsButton } from '../components/settings.js';
 import { walkTo } from '../components/walkTo.js';
 import { attachAmbient } from '../components/ambient.js';
+import { buildHotspotIcon } from '../components/hotspotIcons.js';
 import { speak } from '../audio/speech.js';
 import { tap as tapSound } from '../audio/sounds.js';
 
@@ -25,13 +26,13 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 // owns its color and target route. Coordinates are tuned so the buddy
 // has room to walk between them on phone-sized canvases.
 const HOTSPOTS = [
-  { id: 'library',       label: 'Books',     route: 'library',       cx: 200, cy: 180, color: 'var(--c-orange)', emoji: '📚' },
-  { id: 'phonics',       label: 'Sounds',    route: 'phonics',       cx: 800, cy: 180, color: 'var(--c-blue)',   emoji: '🔤' },
-  { id: 'cloze',         label: 'Fill In',   route: 'cloze',         cx: 200, cy: 480, color: 'var(--c-purple)', emoji: '🧠' },
-  { id: 'wordPicture',   label: 'Match',     route: 'wordPicture',   cx: 800, cy: 480, color: 'var(--c-green)',  emoji: '🧩' },
-  { id: 'buildSentence', label: 'Build',     route: 'buildSentence', cx: 500, cy: 80,  color: 'var(--c-pink)',   emoji: '✍️' },
-  { id: 'stickerBook',   label: 'Stickers',  route: null /* Phase C */, cx: 350, cy: 580, color: 'var(--c-yellow)', emoji: '🌟' },
-  { id: 'closet',        label: 'Closet',    route: 'closet',        cx: 650, cy: 580, color: 'var(--c-red)',    emoji: '🎒' },
+  { id: 'library',       label: 'Books',     route: 'library',       cx: 200, cy: 180, color: 'var(--c-orange)' },
+  { id: 'phonics',       label: 'Sounds',    route: 'phonics',       cx: 800, cy: 180, color: 'var(--c-blue)' },
+  { id: 'cloze',         label: 'Fill In',   route: 'cloze',         cx: 200, cy: 480, color: 'var(--c-purple)' },
+  { id: 'wordPicture',   label: 'Match',     route: 'wordPicture',   cx: 800, cy: 480, color: 'var(--c-green)' },
+  { id: 'buildSentence', label: 'Build',     route: 'buildSentence', cx: 500, cy: 80,  color: 'var(--c-pink)' },
+  { id: 'stickerBook',   label: 'Stickers',  route: null /* Phase C */, cx: 350, cy: 580, color: 'var(--c-yellow)' },
+  { id: 'closet',        label: 'Closet',    route: 'closet',        cx: 650, cy: 580, color: 'var(--c-red)' },
 ];
 
 function el(tag, attrs = {}, parent = null) {
@@ -55,8 +56,7 @@ function buildHotspot(spot) {
     tabindex: '0',
     transform: `translate(${spot.cx} ${spot.cy})`,
   });
-  // Centered around (0,0) so transform-origin is predictable for the
-  // hover scale defined in crayola.css.
+  // The big colored disk under each place.
   el('circle', {
     class: 'hotspot-bubble',
     cx: 0, cy: 0, r: 60,
@@ -65,15 +65,27 @@ function buildHotspot(spot) {
     'stroke-width': 4,
     filter: 'url(#crayon-edge)',
   }, g);
-  // Big emoji in the bubble center.
-  const emoji = el('text', {
-    class: 'hotspot-emoji',
-    x: 0, y: 8,
-    'text-anchor': 'middle',
-    'font-size': 44,
+  // Inner cream ring so the icon sits on a lighter background and the
+  // colored disk reads as a frame, not a flat fill.
+  el('circle', {
+    class: 'hotspot-inner',
+    cx: 0, cy: 0, r: 48,
+    fill: 'var(--c-paper, #fdfaf2)',
+    opacity: 0.85,
     'pointer-events': 'none',
   }, g);
-  emoji.textContent = spot.emoji;
+  // Custom SVG icon, scaled to fit the inner ring.
+  // The icon's viewBox is 0..100, target a ~76px diameter circle so we
+  // scale to 0.76 and translate to center.
+  const iconSvg = buildHotspotIcon(spot.id);
+  // Wrap the inner <svg> in a <g> with a transform so it composes with
+  // the parent SVG's coordinate system.
+  const iconWrap = el('g', {
+    class: 'hotspot-icon-wrap',
+    transform: 'translate(-38 -38) scale(0.76)',
+    'pointer-events': 'none',
+  }, g);
+  iconWrap.appendChild(iconSvg);
   // Label under the bubble.
   const label = el('text', {
     class: 'hotspot-label',
@@ -81,6 +93,85 @@ function buildHotspot(spot) {
   }, g);
   label.textContent = spot.label;
   return g;
+}
+
+// Build the parallax background: a stack of <g> layers from sky → far
+// hills → near meadow. Each layer drifts in from offscreen on entry to
+// give the world a feel of depth. CSS @keyframes do the actual drift
+// (see .map-parallax--{near,far} in crayola.css). Honors
+// prefers-reduced-motion via the existing media query.
+function buildParallax(svg) {
+  // Sky layer — gradient rect + a couple of puffy clouds.
+  const sky = el('g', { class: 'map-parallax map-parallax--sky' }, svg);
+  el('rect', { x: 0, y: 0, width: 1000, height: 480, fill: 'url(#sky-gradient)' }, sky);
+  // Cloud 1 (left)
+  const c1 = el('g', { class: 'map-cloud', transform: 'translate(180 110)' }, sky);
+  el('ellipse', { cx: 0,  cy: 0, rx: 38, ry: 18, fill: '#ffffff', opacity: 0.9 }, c1);
+  el('ellipse', { cx: 30, cy: -6, rx: 26, ry: 16, fill: '#ffffff', opacity: 0.9 }, c1);
+  el('ellipse', { cx: -28, cy: -4, rx: 22, ry: 14, fill: '#ffffff', opacity: 0.85 }, c1);
+  // Cloud 2 (right)
+  const c2 = el('g', { class: 'map-cloud', transform: 'translate(770 80)' }, sky);
+  el('ellipse', { cx: 0,  cy: 0, rx: 32, ry: 14, fill: '#ffffff', opacity: 0.85 }, c2);
+  el('ellipse', { cx: 22, cy: 4, rx: 20, ry: 12, fill: '#ffffff', opacity: 0.8 }, c2);
+
+  // Far hills layer — two rounded silhouettes drift at a slow rate.
+  const farHills = el('g', { class: 'map-parallax map-parallax--far' }, svg);
+  el('path', {
+    d: 'M -20 360 Q 200 220 460 320 T 1020 320 V 640 H -20 Z',
+    fill: '#cfe9d8',
+  }, farHills);
+  el('path', {
+    d: 'M -20 420 Q 240 320 540 380 T 1020 360 V 640 H -20 Z',
+    fill: '#a8d3b8',
+  }, farHills);
+
+  // Near meadow layer — front grass + grass blade detail.
+  const meadow = el('g', { class: 'map-parallax map-parallax--near' }, svg);
+  el('path', {
+    d: 'M -20 480 Q 220 420 520 460 T 1020 440 V 640 H -20 Z',
+    fill: '#7ed47b',
+  }, meadow);
+  // 12 grass blade tufts scattered along the front.
+  const bladeXs = [40, 110, 175, 260, 340, 420, 510, 590, 670, 750, 830, 910];
+  for (const x of bladeXs) {
+    const y = 540 + ((x * 7) % 25);
+    el('path', {
+      d: `M ${x} ${y} l -3 -16 l 1 14 l 4 -16 l -1 16 l 4 -14 l -2 16 z`,
+      fill: '#3f8a44',
+    }, meadow);
+  }
+  // A couple of tiny flowers
+  const flowers = [
+    { x: 90,  y: 530, c: '#ff5d5d' },
+    { x: 380, y: 520, c: '#ff7eb6' },
+    { x: 720, y: 540, c: '#ffd166' },
+    { x: 920, y: 528, c: '#7fc8ff' },
+  ];
+  for (const f of flowers) {
+    el('circle', { cx: f.x, cy: f.y, r: 6, fill: f.c }, meadow);
+    el('circle', { cx: f.x, cy: f.y, r: 2, fill: '#ffffff' }, meadow);
+  }
+}
+
+// SVG <defs> local to the world map (gradient + bark stripe pattern
+// referenced by hotspot icons). These are added once per mount.
+function buildLocalDefs(svg) {
+  const defs = el('defs', {}, svg);
+  defs.innerHTML = `
+    <linearGradient id="sky-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#bfe6ff" />
+      <stop offset="60%"  stop-color="#dff2fb" />
+      <stop offset="100%" stop-color="#f4f7e9" />
+    </linearGradient>
+    <pattern id="bark-stripes" patternUnits="userSpaceOnUse" width="3" height="6">
+      <rect width="3" height="6" fill="#7a4a26" />
+      <line x1="0" y1="0" x2="0" y2="6" stroke="#5a3216" stroke-width="0.5" />
+    </pattern>
+    <pattern id="bench-grain" patternUnits="userSpaceOnUse" width="10" height="2">
+      <rect width="10" height="2" fill="#a0673a" />
+      <line x1="0" y1="1" x2="10" y2="1" stroke="#5a3216" stroke-width="0.3" />
+    </pattern>
+  `;
 }
 
 export function mount(container, ctx) {
@@ -123,10 +214,12 @@ export function mount(container, ctx) {
   });
   canvas.appendChild(svg);
 
-  // Soft sky→meadow background inside the SVG so it composes with the
-  // outer .crayola-bg gradient nicely.
-  const sky = el('rect', { x: 0, y: 0, width: 1000, height: 640, fill: 'transparent' }, svg);
-  void sky;
+  // Local defs (gradients + patterns referenced by parallax + icons).
+  buildLocalDefs(svg);
+
+  // Parallax background layers (sky / far hills / near meadow). Drawn
+  // before hotspots so the hotspots and buddy compose on top.
+  buildParallax(svg);
 
   // Curving path connecting the hotspots so the kid sees them as part
   // of one place, not isolated buttons. Cosmetic only.

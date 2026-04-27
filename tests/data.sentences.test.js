@@ -63,3 +63,65 @@ test('every sceneId in SENTENCES is also in sceneArt listScenes()', () => {
     assert.ok(all.has(s.sceneId), `missing scene ${s.sceneId}`);
   }
 });
+
+// ----- Polish v2 invariants (preventing the "multiple correct orderings" bug) -----
+
+test('no sentence has a content token appearing twice (a/the may appear at most once each)', () => {
+  // The duplicate-the-twice problem made some Build-a-Sentence rounds
+  // ambiguous because two slot orderings produced the same string. We
+  // rule that out at the data layer: each token may appear at most
+  // once, including the articles.
+  for (const s of SENTENCES) {
+    const tokens = tokenize(s.text).map((w) => w.toLowerCase());
+    const counts = new Map();
+    for (const t of tokens) counts.set(t, (counts.get(t) || 0) + 1);
+    for (const [t, c] of counts) {
+      assert.ok(c === 1, `token "${t}" appears ${c} times in "${s.text}" — duplicates make tile ordering ambiguous`);
+    }
+  }
+});
+
+test('corpus is graded into L1 (3-4), L2 (5-6), L3 (7-8) bands by token count', () => {
+  // We don't require any sentence to declare its level — the level is
+  // derived from token count. We just enforce that every sentence
+  // falls into one of the three accepted bands.
+  for (const s of SENTENCES) {
+    const n = tokenize(s.text).length;
+    assert.ok(n >= 3 && n <= 8, `"${s.text}" has ${n} tokens (must be 3-8)`);
+  }
+});
+
+test('corpus has at least 5 sentences in each difficulty band', () => {
+  // Variety guarantee: the practice rotations need enough range to
+  // avoid feeling repetitive at any difficulty.
+  const counts = { L1: 0, L2: 0, L3: 0 };
+  for (const s of SENTENCES) {
+    const n = tokenize(s.text).length;
+    if (n <= 4) counts.L1++;
+    else if (n <= 6) counts.L2++;
+    else counts.L3++;
+  }
+  assert.ok(counts.L1 >= 5, `only ${counts.L1} L1 sentences`);
+  assert.ok(counts.L2 >= 5, `only ${counts.L2} L2 sentences`);
+  assert.ok(counts.L3 >= 5, `only ${counts.L3} L3 sentences`);
+});
+
+test('first letter of every sentence is uppercase, rest of words start lowercase or are I', () => {
+  // Reading-fidelity check: capitalization should be exactly the kind
+  // of thing a kindergartener is being taught — capital at the start,
+  // lowercase elsewhere except for the pronoun "I".
+  for (const s of SENTENCES) {
+    const tokens = tokenize(s.text);
+    assert.match(tokens[0], /^[A-Z]/, `"${s.text}" doesn't start with a capital letter`);
+    for (let i = 1; i < tokens.length; i++) {
+      const t = tokens[i];
+      if (t === 'I') continue;
+      assert.match(t, /^[a-z]/, `mid-sentence word "${t}" in "${s.text}" should start lowercase`);
+    }
+  }
+});
+
+test('tokenize() handles trailing ! and ? as well as .', () => {
+  assert.deepEqual(tokenize('Look at the panda!'), ['Look', 'at', 'the', 'panda']);
+  assert.deepEqual(tokenize('Where is the panda?'), ['Where', 'is', 'the', 'panda']);
+});
