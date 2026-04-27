@@ -3,8 +3,8 @@
 // composing characters from koala.js / panda.js with simple drawn props
 // (tree, log, ball, sun, grass).
 
-import { buildKoala } from './koala.js';
-import { buildPanda } from './panda.js';
+import { buildKoala } from './koala.js?v=4';
+import { buildPanda } from './panda.js?v=4';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 

@@ -9,30 +9,32 @@
 // The buddy on the hub is rendered with the existing buildKoala. Phase
 // B will swap this for buildBuddy() so the kid's chosen buddy appears.
 
-import { buildBuddy } from '../components/buddy.js';
+import { buildBuddy } from '../components/buddy.js?v=4';
 import { attach as animate } from '../characters/animator.js';
 import { buildStarCounter }   from '../components/stars.js';
 import { buildStreakChip }    from '../components/streak.js';
 import { buildSettingsButton } from '../components/settings.js';
 import { walkTo } from '../components/walkTo.js';
 import { attachAmbient } from '../components/ambient.js';
-import { buildHotspotIcon } from '../components/hotspotIcons.js';
+import { buildHotspotIcon } from '../components/hotspotIcons.js?v=4';
 import { speak } from '../audio/speech.js';
 import { tap as tapSound } from '../audio/sounds.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 // Hotspot layout in SVG user-units (viewBox 0 0 1000 640). Each entry
-// owns its color and target route. Coordinates are tuned so the buddy
-// has room to walk between them on phone-sized canvases.
+// owns its target route, gradient id (from svgFilters.js), illustrated
+// glyph, and plain-text label rendered on a wooden plate below the
+// bubble. Coordinates are tuned so the buddy has room to walk between
+// them on phone-sized canvases.
 const HOTSPOTS = [
-  { id: 'library',       label: 'Books',     route: 'library',       cx: 200, cy: 180, color: 'var(--c-orange)' },
-  { id: 'phonics',       label: 'Sounds',    route: 'phonics',       cx: 800, cy: 180, color: 'var(--c-blue)' },
-  { id: 'cloze',         label: 'Fill In',   route: 'cloze',         cx: 200, cy: 480, color: 'var(--c-purple)' },
-  { id: 'wordPicture',   label: 'Match',     route: 'wordPicture',   cx: 800, cy: 480, color: 'var(--c-green)' },
-  { id: 'buildSentence', label: 'Build',     route: 'buildSentence', cx: 500, cy: 80,  color: 'var(--c-pink)' },
-  { id: 'stickerBook',   label: 'Stickers',  route: null /* Phase C */, cx: 350, cy: 580, color: 'var(--c-yellow)' },
-  { id: 'closet',        label: 'Closet',    route: 'closet',        cx: 650, cy: 580, color: 'var(--c-red)' },
+  { id: 'library',       label: 'Books',    route: 'library',        cx: 200, cy: 180, grad: 'g-orange', glyph: '📖' },
+  { id: 'phonics',       label: 'Sounds',   route: 'phonics',        cx: 800, cy: 180, grad: 'g-blue',   glyph: '🔤' },
+  { id: 'cloze',         label: 'Fill In',  route: 'cloze',          cx: 200, cy: 460, grad: 'g-purple', glyph: '💭' },
+  { id: 'wordPicture',   label: 'Match',    route: 'wordPicture',    cx: 800, cy: 460, grad: 'g-green',  glyph: '🧩' },
+  { id: 'buildSentence', label: 'Build',    route: 'buildSentence',  cx: 500, cy: 100, grad: 'g-pink',   glyph: '✍️' },
+  { id: 'stickerBook',   label: 'Stickers', route: null /* Phase C */, cx: 320, cy: 580, grad: 'g-yellow', glyph: '🌼' },
+  { id: 'closet',        label: 'Closet',   route: 'closet',         cx: 680, cy: 580, grad: 'g-red',    glyph: '🎒' },
 ];
 
 function el(tag, attrs = {}, parent = null) {
@@ -56,44 +58,69 @@ function buildHotspot(spot) {
     tabindex: '0',
     transform: `translate(${spot.cx} ${spot.cy})`,
   });
-  // The big colored disk under each place.
-  // No SVG filter here — the crayon-edge displacement filter causes
-  // hover hit-test oscillation when the cursor is near the wobbly
-  // rendered edge. Hand-drawn feel comes from the inner ring + icon
-  // detail instead.
+  // Wrap art + plate in a single group with the soft-shadow filter so
+  // the entire icon casts one cohesive shadow.
+  const art = el('g', { class: 'hotspot-art', filter: 'url(#soft-shadow)' }, g);
+  // Soft outer glow (a slightly larger, faded copy behind the bubble)
+  // — gives the bubble a halo of color so it reads as glowing not flat.
+  el('circle', {
+    class: 'hotspot-glow',
+    cx: 0, cy: 0, r: 76,
+    fill: `url(#${spot.grad})`,
+    opacity: 0.28,
+  }, art);
+  // The main bubble — radial gradient + dark outline. The radial
+  // gradient makes it read as a 3D ball lit from the upper-left.
   el('circle', {
     class: 'hotspot-bubble',
-    cx: 0, cy: 0, r: 60,
-    fill: spot.color,
+    cx: 0, cy: 0, r: 64,
+    fill: `url(#${spot.grad})`,
     stroke: 'var(--c-ink)',
-    'stroke-width': 4,
-  }, g);
-  // Inner cream ring so the icon sits on a lighter background and the
-  // colored disk reads as a frame, not a flat fill.
-  el('circle', {
-    class: 'hotspot-inner',
-    cx: 0, cy: 0, r: 48,
-    fill: 'var(--c-paper, #fdfaf2)',
-    opacity: 0.85,
+    'stroke-width': 3.5,
+  }, art);
+  // Inner highlight ellipse — sells the "lit ball" illusion.
+  el('ellipse', {
+    class: 'hotspot-shine',
+    cx: -16, cy: -22, rx: 22, ry: 12,
+    fill: '#ffffff',
+    opacity: 0.45,
     'pointer-events': 'none',
-  }, g);
-  // Custom SVG icon, scaled to fit the inner ring.
-  // The icon's viewBox is 0..100, target a ~76px diameter circle so we
-  // scale to 0.76 and translate to center.
-  const iconSvg = buildHotspotIcon(spot.id);
-  // Wrap the inner <svg> in a <g> with a transform so it composes with
-  // the parent SVG's coordinate system.
-  const iconWrap = el('g', {
-    class: 'hotspot-icon-wrap',
-    transform: 'translate(-38 -38) scale(0.76)',
-    'pointer-events': 'none',
-  }, g);
-  iconWrap.appendChild(iconSvg);
-  // Label under the bubble.
+  }, art);
+  // Illustrated icon on top of the bubble. Each icon is hand-drawn as
+  // a small SVG group (see js/components/hotspotIcons.js) so the place
+  // reads as a real little scene — treehouse, cave, pond, etc. — not a
+  // generic emoji circle.
+  const icon = buildHotspotIcon(spot.id);
+  if (icon) {
+    icon.setAttribute('class', `${icon.getAttribute('class') || ''} hotspot-icon`);
+    icon.setAttribute('pointer-events', 'none');
+    art.appendChild(icon);
+  } else {
+    // Fallback if a hotspot id has no illustrated icon registered.
+    const glyph = el('text', {
+      class: 'hotspot-emoji',
+      x: 0, y: 12,
+      'text-anchor': 'middle',
+      'font-size': 48,
+      'pointer-events': 'none',
+    }, art);
+    glyph.textContent = spot.glyph;
+  }
+
+  // Wooden label plate under the bubble. Sits OUTSIDE the soft-shadow
+  // group so its own contrast stays sharp.
+  const plate = el('g', { class: 'hotspot-plate', transform: 'translate(0 88)' }, g);
+  el('rect', {
+    x: -52, y: -16, width: 104, height: 32, rx: 14, ry: 14,
+    fill: '#fff8e7',
+    stroke: 'var(--c-ink)',
+    'stroke-width': 2.5,
+    filter: 'url(#soft-shadow)',
+  }, plate);
   const label = el('text', {
     class: 'hotspot-label',
-    x: 0, y: 92,
-  }, g);
+    x: 0, y: 6,
+  }, plate);
   label.textContent = spot.label;
   return g;
 }
@@ -251,19 +278,17 @@ export function mount(container, ctx) {
     'data-cy': '320',
     transform: 'translate(500 320)',
   });
-  // The koala SVG is sized in pixels, so we wrap-and-scale via a foreignObject-free trick:
-  // the koala builder returns a self-contained <svg>; we drop it inside a <g> and rely on
-  // its intrinsic 220×260 box. Center it on (0,0) inside the group.
   // Buddy = the kid's chosen reading companion (Phase B). Defaults to
   // a classic koala with a leaf when nothing is saved yet.
-  // Force explicit pixel dimensions on the inner <svg>. Without these,
-  // the nested SVG inherits 100% of its containing block, which inside
-  // an outer <svg>/<g> causes the buddy to scale up to the entire
-  // viewport — giant koala covering half the world map.
+  // BUG FIX: nested <svg> inside a parent <svg> defaults to 100% of the
+  // outer viewport unless we set explicit width/height. Without that,
+  // the koala filled the whole map. Belt-and-suspenders: also pin x/y.
   const BUDDY_W = 220, BUDDY_H = 260;
   let buddySvg = buildBuddy({ size: 'tall' });
   buddySvg.setAttribute('width',  String(BUDDY_W));
   buddySvg.setAttribute('height', String(BUDDY_H));
+  buddySvg.setAttribute('x', '0');
+  buddySvg.setAttribute('y', '0');
   let wrap = el('g', { transform: `translate(${-BUDDY_W / 2} ${-BUDDY_H / 2})` }, buddyG);
   wrap.appendChild(buddySvg);
   svg.appendChild(buddyG);

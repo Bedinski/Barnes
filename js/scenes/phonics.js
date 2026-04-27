@@ -14,7 +14,7 @@
 
 import { FAMILIES, getFamily, phonemeFor } from '../data/phonics.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';
-import { BuddyCorner } from '../components/buddy.js';
+import { BuddyCorner } from '../components/buddy.js?v=4';
 import { bumpStat } from '../components/badges.js';
 import { speak } from '../audio/speech.js';
 import { success, tryAgain, tap as tapSound } from '../audio/sounds.js';

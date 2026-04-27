@@ -1,246 +1,192 @@
-// Custom SVG icons for the world-map hotspot bubbles. Replaces the
-// previous emoji glyphs with scene-style illustrations that read as
-// "drawn into" each bubble. Pure SVG, no images, no fonts.
+// Illustrated hotspot icons (Polish iteration 2). Each builder returns
+// an SVG <g> element designed to sit inside a 128×128 user-unit box
+// centered on (0, 0). They replace the flat emoji glyphs the world-map
+// hub used to render — turning each "place" into a tiny illustrated
+// scene that reads as part of the world rather than a generic icon.
 //
-//   import { buildHotspotIcon } from '../components/hotspotIcons.js';
-//   bubbleGroup.appendChild(buildHotspotIcon('library'));
-//
-// Each builder returns an <svg> element sized 0..100 in user units;
-// the world-map scales it to the bubble interior via a wrapping <g>.
-//
-// Design intent: every icon evokes its place, not just its emoji.
-//   library     → tree-house with a warm-glow window + ladder
-//   phonics     → cave mouth with letters scattered around it
-//   cloze       → pond with ripples and a lily pad
-//   wordPicture → meadow with a sun, flowers, and a path
-//   buildSentence → wooden workbench with stacked word blocks
-//   stickerBook → sunburst + a star sticker
-//   closet      → wardrobe with a door cracked open and a bow on top
+// The drawings are intentionally chunky and crayon-bright so they read
+// well at the size the bubble allows on a phone (~60–80px square).
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
-function svg() {
-  const s = document.createElementNS(SVG_NS, 'svg');
-  s.setAttribute('viewBox', '0 0 100 100');
-  s.setAttribute('xmlns', SVG_NS);
-  s.setAttribute('class', 'hotspot-icon');
-  s.setAttribute('aria-hidden', 'true');
-  s.setAttribute('focusable', 'false');
-  return s;
+function group(attrs = {}) {
+  const g = document.createElementNS(SVG_NS, 'g');
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v != null) g.setAttribute(k, String(v));
+  }
+  return g;
 }
 
-const ICONS = {
-  // Books → a treehouse: trunk, layered canopy, ladder up the trunk,
-  // and a square window with a warm yellow glow.
-  library() {
-    const s = svg();
-    s.innerHTML = `
-      <!-- canopy back -->
-      <ellipse cx="50" cy="32" rx="38" ry="24" fill="#3f8a44" />
-      <!-- canopy front (lighter, offset for depth) -->
-      <ellipse cx="44" cy="28" rx="30" ry="20" fill="#6dbf6a" />
-      <ellipse cx="62" cy="34" rx="22" ry="14" fill="#8cd58a" />
-      <!-- a few leaf dots for texture -->
-      <circle cx="30" cy="22" r="3" fill="#ffffff" opacity="0.4" />
-      <circle cx="60" cy="20" r="2" fill="#ffffff" opacity="0.5" />
-      <!-- trunk -->
-      <rect x="44" y="46" width="12" height="38" fill="#7a4a26" />
-      <rect x="44" y="46" width="12" height="38" fill="url(#bark-stripes)" opacity="0.25" />
-      <!-- ladder up the trunk -->
-      <line x1="40" y1="50" x2="40" y2="80" stroke="#5a3216" stroke-width="1.5" />
-      <line x1="60" y1="50" x2="60" y2="80" stroke="#5a3216" stroke-width="1.5" />
-      <line x1="40" y1="56" x2="60" y2="56" stroke="#5a3216" stroke-width="1.5" />
-      <line x1="40" y1="64" x2="60" y2="64" stroke="#5a3216" stroke-width="1.5" />
-      <line x1="40" y1="72" x2="60" y2="72" stroke="#5a3216" stroke-width="1.5" />
-      <!-- window with warm glow -->
-      <rect x="46" y="54" width="8" height="8" fill="#ffd166" />
-      <rect x="46" y="54" width="8" height="8" fill="none" stroke="#5a3216" stroke-width="1" />
-      <line x1="50" y1="54" x2="50" y2="62" stroke="#5a3216" stroke-width="0.8" />
-      <line x1="46" y1="58" x2="54" y2="58" stroke="#5a3216" stroke-width="0.8" />
-    `;
-    return s;
-  },
+// Each builder writes its inner SVG via innerHTML for compactness — the
+// markup is inert content, no runtime templating, and the existing
+// character builders use the same pattern.
 
-  // Sounds → a cave mouth (dark interior, lighter inner) with letters
-  // around it; reads as "phonics" without spelling it.
-  phonics() {
-    const s = svg();
-    s.innerHTML = `
-      <!-- ground -->
-      <ellipse cx="50" cy="86" rx="40" ry="6" fill="#7a8c4a" opacity="0.5" />
-      <!-- cave mouth: outer rock arch -->
-      <path d="M 18 80 Q 18 36 50 36 Q 82 36 82 80 Z" fill="#5a4a55" />
-      <!-- inner mouth (lighter to suggest depth) -->
-      <path d="M 26 78 Q 26 44 50 44 Q 74 44 74 78 Z" fill="#2c2230" />
-      <!-- glowing letters scattered around -->
-      <text x="14" y="32" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#ff7eb6">a</text>
-      <text x="80" y="28" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#ffd166">b</text>
-      <text x="86" y="62" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#7ed47b">c</text>
-      <text x="6"  y="58" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#7fc8ff">d</text>
-      <text x="46" y="22" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#ff5d5d">e</text>
-    `;
-    return s;
-  },
+function libraryTreehouse() {
+  const g = group({ class: 'hot-icon hot-treehouse' });
+  g.innerHTML = `
+    <!-- canopy: 3 overlapping leafy clouds -->
+    <ellipse cx="-18" cy="-22" rx="22" ry="18" fill="#3f8b3a" />
+    <ellipse cx="14"  cy="-28" rx="24" ry="20" fill="#4ea14a" />
+    <ellipse cx="0"   cy="-12" rx="30" ry="20" fill="#54c45e" />
+    <ellipse cx="-10" cy="-22" rx="10" ry="6"  fill="#8be094" opacity="0.6" />
+    <!-- trunk -->
+    <rect x="-7" y="-2" width="14" height="32" rx="3" fill="#7a4a2a" />
+    <rect x="-7" y="-2" width="14" height="32" rx="3" fill="url(#g-shade)" />
+    <!-- tiny door -->
+    <rect x="-5" y="6" width="10" height="14" rx="3" fill="#3a2515" />
+    <circle cx="3" cy="14" r="1" fill="#ffd23f" />
+    <!-- a book on a branch -->
+    <rect x="10" y="-4" width="12" height="9" rx="1" fill="#ef3e3e" />
+    <rect x="10" y="-4" width="12" height="2" fill="#a52323" />
+  `;
+  return g;
+}
 
-  // Fill In → a pond with ripples and a lily pad; the empty water
-  // suggests a "blank waiting to be filled."
-  cloze() {
-    const s = svg();
-    s.innerHTML = `
-      <!-- pond ellipse -->
-      <ellipse cx="50" cy="62" rx="38" ry="22" fill="#5cb1de" />
-      <ellipse cx="50" cy="60" rx="36" ry="20" fill="#7fc8ff" />
-      <!-- ripples -->
-      <ellipse cx="50" cy="60" rx="22" ry="12" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.7" />
-      <ellipse cx="50" cy="60" rx="14" ry="8"  fill="none" stroke="#ffffff" stroke-width="1" opacity="0.5" />
-      <ellipse cx="50" cy="60" rx="6"  ry="4"  fill="none" stroke="#ffffff" stroke-width="1" opacity="0.3" />
-      <!-- lily pad -->
-      <ellipse cx="32" cy="56" rx="11" ry="6" fill="#3f8a44" />
-      <path d="M 32 56 L 36 50" stroke="#3f8a44" stroke-width="1.5" fill="none" />
-      <!-- flower on pad -->
-      <circle cx="28" cy="54" r="2.5" fill="#ff7eb6" />
-      <circle cx="28" cy="54" r="1"   fill="#ffd166" />
-      <!-- second smaller pad -->
-      <ellipse cx="68" cy="68" rx="7" ry="4" fill="#6dbf6a" />
-      <!-- a fish silhouette -->
-      <path d="M 56 64 q 2 -2 6 0 q -2 2 -6 0 m 6 0 l 2 -1 v 2 z" fill="#ffd166" opacity="0.85" />
-    `;
-    return s;
-  },
+function phonicsCave() {
+  const g = group({ class: 'hot-icon hot-cave' });
+  g.innerHTML = `
+    <!-- ground shadow -->
+    <ellipse cx="0" cy="28" rx="34" ry="6" fill="rgba(0,0,0,0.18)" />
+    <!-- cave arch -->
+    <path d="M -32 28 L -32 0 Q -32 -28 0 -28 Q 32 -28 32 0 L 32 28 Z" fill="#1a3a5e" />
+    <path d="M -26 26 L -26 2  Q -26 -22 0 -22 Q 26 -22 26 2  L 26 26 Z" fill="#0d2238" />
+    <!-- glowing letters spilling out -->
+    <text x="-12" y="14" font-family="'Bubblegum Sans', sans-serif" font-size="20" font-weight="700" fill="#ffd23f">A</text>
+    <text x="2"   y="20" font-family="'Bubblegum Sans', sans-serif" font-size="16" font-weight="700" fill="#ff8a3d">B</text>
+    <text x="14"  y="14" font-family="'Bubblegum Sans', sans-serif" font-size="18" font-weight="700" fill="#54c45e">C</text>
+    <!-- two stalactites -->
+    <path d="M -18 -22 L -14 -10 L -22 -10 Z" fill="#2a4a6e" />
+    <path d="M  16 -22 L  20 -10 L  12 -10 Z" fill="#2a4a6e" />
+  `;
+  return g;
+}
 
-  // Match → meadow with a sun, hills, flowers; matching = pairing,
-  // and the meadow suggests cards laid out side by side.
-  wordPicture() {
-    const s = svg();
-    s.innerHTML = `
-      <!-- back hill -->
-      <path d="M 0 70 Q 30 52 60 60 T 100 64 V 100 H 0 Z" fill="#6dbf6a" />
-      <!-- front hill -->
-      <path d="M 0 80 Q 25 70 50 76 T 100 78 V 100 H 0 Z" fill="#3f8a44" />
-      <!-- sun -->
-      <circle cx="78" cy="22" r="11" fill="#ffd166" />
-      <g stroke="#f5b842" stroke-width="1.5" stroke-linecap="round">
-        <line x1="78" y1="6"  x2="78" y2="10" />
-        <line x1="78" y1="34" x2="78" y2="38" />
-        <line x1="62" y1="22" x2="66" y2="22" />
-        <line x1="90" y1="22" x2="94" y2="22" />
-        <line x1="68" y1="12" x2="71" y2="15" />
-        <line x1="88" y1="12" x2="85" y2="15" />
-      </g>
-      <!-- flowers -->
-      <circle cx="20" cy="76" r="2.5" fill="#ff5d5d" /><circle cx="20" cy="76" r="1" fill="#ffd166" />
-      <circle cx="34" cy="82" r="2.5" fill="#ff7eb6" /><circle cx="34" cy="82" r="1" fill="#ffd166" />
-      <circle cx="68" cy="84" r="2.5" fill="#7fc8ff" /><circle cx="68" cy="84" r="1" fill="#ffffff" />
-      <!-- grass blades -->
-      <path d="M 12 90 l 1 -6 l 1 6 z" fill="#3f8a44" />
-      <path d="M 50 92 l 1 -6 l 1 6 z" fill="#3f8a44" />
-      <path d="M 82 90 l 1 -6 l 1 6 z" fill="#3f8a44" />
-    `;
-    return s;
-  },
+function clozePond() {
+  const g = group({ class: 'hot-icon hot-pond' });
+  g.innerHTML = `
+    <!-- water -->
+    <ellipse cx="0" cy="14" rx="38" ry="14" fill="#2378c8" />
+    <ellipse cx="0" cy="14" rx="38" ry="14" fill="url(#g-shade)" opacity="0.6" />
+    <ellipse cx="-8" cy="10" rx="14" ry="3" fill="#7fc6ff" opacity="0.7" />
+    <!-- two lily pads -->
+    <path d="M -20 12 a 10 5 0 1 0 20 0 a 10 5 0 1 0 -20 0 Z M -10 12 L -10 7 Z" fill="#4ea14a" />
+    <ellipse cx="14" cy="14" rx="9" ry="4" fill="#54c45e" />
+    <!-- thought bubble rising -->
+    <circle cx="-6" cy="-4"  r="4" fill="#fff" stroke="#1a1a1a" stroke-width="1.5" />
+    <circle cx="2"  cy="-12" r="6" fill="#fff" stroke="#1a1a1a" stroke-width="1.5" />
+    <circle cx="14" cy="-22" r="9" fill="#fff" stroke="#1a1a1a" stroke-width="2" />
+    <text x="14" y="-19" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="14" font-weight="700" fill="#a672ff">?</text>
+  `;
+  return g;
+}
 
-  // Build → a tiny carpenter's workbench with stacked word blocks.
-  buildSentence() {
-    const s = svg();
-    s.innerHTML = `
-      <!-- workbench top -->
-      <rect x="14" y="62" width="72" height="8" fill="#a0673a" />
-      <rect x="14" y="62" width="72" height="8" fill="url(#bench-grain)" opacity="0.25" />
-      <!-- legs -->
-      <rect x="20" y="70" width="6" height="20" fill="#7a4a26" />
-      <rect x="74" y="70" width="6" height="20" fill="#7a4a26" />
-      <!-- crossbar -->
-      <rect x="20" y="84" width="60" height="3" fill="#7a4a26" />
-      <!-- block 1 (yellow) -->
-      <rect x="22" y="50" width="20" height="12" fill="#ffd166" stroke="#5a3216" stroke-width="1.2" />
-      <text x="32" y="60" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#5a3216" text-anchor="middle">The</text>
-      <!-- block 2 (pink) -->
-      <rect x="44" y="50" width="22" height="12" fill="#ff7eb6" stroke="#5a3216" stroke-width="1.2" />
-      <text x="55" y="60" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#5a3216" text-anchor="middle">cat</text>
-      <!-- block 3 (green) -->
-      <rect x="68" y="50" width="14" height="12" fill="#7ed47b" stroke="#5a3216" stroke-width="1.2" />
-      <text x="75" y="60" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#5a3216" text-anchor="middle">is</text>
-      <!-- a stacked block on top (purple) -->
-      <rect x="32" y="38" width="22" height="12" fill="#c89bff" stroke="#5a3216" stroke-width="1.2" />
-      <text x="43" y="48" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#5a3216" text-anchor="middle">big</text>
-      <!-- pencil -->
-      <line x1="60" y1="42" x2="74" y2="32" stroke="#ffd166" stroke-width="3" stroke-linecap="round" />
-      <line x1="60" y1="42" x2="62" y2="40" stroke="#5a3216" stroke-width="3" stroke-linecap="round" />
-    `;
-    return s;
-  },
+function matchMeadow() {
+  const g = group({ class: 'hot-icon hot-meadow' });
+  g.innerHTML = `
+    <!-- meadow mound -->
+    <ellipse cx="0" cy="22" rx="38" ry="10" fill="#3f8b3a" />
+    <ellipse cx="0" cy="20" rx="36" ry="8"  fill="#54c45e" />
+    <!-- easel with picture -->
+    <line x1="-8" y1="20" x2="-14" y2="-6" stroke="#7a4a2a" stroke-width="3" stroke-linecap="round" />
+    <line x1="8"  y1="20" x2="14"  y2="-6" stroke="#7a4a2a" stroke-width="3" stroke-linecap="round" />
+    <line x1="-12" y1="6" x2="12"  y2="6"  stroke="#7a4a2a" stroke-width="2" />
+    <rect x="-12" y="-18" width="24" height="20" rx="2" fill="#fff8e7" stroke="#1a1a1a" stroke-width="1.5" />
+    <!-- abstract picture content -->
+    <rect x="-10" y="-15" width="20" height="6" fill="#3aa6ff" />
+    <circle cx="-3" cy="-4" r="2" fill="#ffd23f" />
+    <!-- flowers around -->
+    <circle cx="-26" cy="14" r="3" fill="#ef3e3e" /><circle cx="-26" cy="14" r="1" fill="#ffd23f" />
+    <circle cx="26"  cy="14" r="3" fill="#a672ff" /><circle cx="26"  cy="14" r="1" fill="#ffd23f" />
+  `;
+  return g;
+}
 
-  // Stickers → a sunburst with a big gold star sticker on top.
-  stickerBook() {
-    const s = svg();
-    s.innerHTML = `
-      <!-- sunburst rays -->
-      <g stroke="#ffd166" stroke-width="4" stroke-linecap="round" opacity="0.85">
-        <line x1="50" y1="10" x2="50" y2="22" />
-        <line x1="50" y1="78" x2="50" y2="90" />
-        <line x1="10" y1="50" x2="22" y2="50" />
-        <line x1="78" y1="50" x2="90" y2="50" />
-        <line x1="22" y1="22" x2="30" y2="30" />
-        <line x1="78" y1="22" x2="70" y2="30" />
-        <line x1="22" y1="78" x2="30" y2="70" />
-        <line x1="78" y1="78" x2="70" y2="70" />
-      </g>
-      <!-- star sticker (5-point), drawn from a path -->
-      <g transform="translate(50 50)">
-        <path d="M 0 -22 L 6 -7 L 22 -7 L 9 3 L 14 18 L 0 9 L -14 18 L -9 3 L -22 -7 L -6 -7 Z"
-              fill="#ffd166" stroke="#5a3216" stroke-width="2" stroke-linejoin="round" />
-        <!-- inner highlight -->
-        <path d="M -3 -10 L 0 -16 L 3 -10 Z" fill="#fff5cc" />
-      </g>
-      <!-- a small heart sticker peeking out -->
-      <g transform="translate(78 70) rotate(15)">
-        <path d="M 0 4 Q -4 0 -4 -3 Q -4 -6 0 -6 Q 4 -6 4 -3 Q 4 0 0 4 Z"
-              fill="#ff5d5d" stroke="#5a3216" stroke-width="1" />
-      </g>
-    `;
-    return s;
-  },
+function sentenceWorkshop() {
+  const g = group({ class: 'hot-icon hot-workshop' });
+  g.innerHTML = `
+    <!-- back wall plank -->
+    <rect x="-32" y="-22" width="64" height="44" rx="4" fill="#a05a3a" />
+    <rect x="-32" y="-22" width="64" height="44" rx="4" fill="url(#g-shade)" opacity="0.55" />
+    <!-- letter blocks -->
+    <rect x="-22" y="-2" width="16" height="16" rx="2" fill="#ef3e3e" stroke="#1a1a1a" stroke-width="1.5" />
+    <rect x="-4"  y="-2" width="16" height="16" rx="2" fill="#3aa6ff" stroke="#1a1a1a" stroke-width="1.5" />
+    <rect x="14"  y="-2" width="16" height="16" rx="2" fill="#ffd23f" stroke="#1a1a1a" stroke-width="1.5" />
+    <!-- block letters -->
+    <text x="-14" y="11" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="16" font-weight="700" fill="#fff">C</text>
+    <text x="4"   y="11" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="16" font-weight="700" fill="#fff">A</text>
+    <text x="22"  y="11" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="16" font-weight="700" fill="#1a1a1a">T</text>
+    <!-- topper block -->
+    <rect x="-4" y="-22" width="16" height="16" rx="2" fill="#54c45e" stroke="#1a1a1a" stroke-width="1.5" />
+    <text x="4"  y="-9" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="16" font-weight="700" fill="#fff">!</text>
+  `;
+  return g;
+}
 
-  // Closet → a small wardrobe with the door cracked open and a hat
-  // peeking out + a bow on the top.
-  closet() {
-    const s = svg();
-    s.innerHTML = `
-      <!-- wardrobe body -->
-      <rect x="22" y="20" width="56" height="68" fill="#a0673a" stroke="#5a3216" stroke-width="2" />
-      <!-- bow on top -->
-      <ellipse cx="50" cy="20" rx="6" ry="4" fill="#ff7eb6" />
-      <ellipse cx="44" cy="20" rx="3" ry="4" fill="#ff5d5d" />
-      <ellipse cx="56" cy="20" rx="3" ry="4" fill="#ff5d5d" />
-      <circle cx="50" cy="20" r="2" fill="#ffd166" />
-      <!-- left door (closed) -->
-      <rect x="24" y="24" width="24" height="60" fill="#c4895a" stroke="#5a3216" stroke-width="1" />
-      <circle cx="44" cy="54" r="1.5" fill="#5a3216" />
-      <!-- right door (cracked open, rotated slightly) -->
-      <g transform="rotate(-12 52 24)">
-        <rect x="52" y="24" width="24" height="60" fill="#c4895a" stroke="#5a3216" stroke-width="1" />
-        <circle cx="56" cy="54" r="1.5" fill="#5a3216" />
-      </g>
-      <!-- a hat peeking out -->
-      <g transform="translate(58 40)">
-        <ellipse cx="0" cy="6" rx="12" ry="2.5" fill="#5a3216" />
-        <rect x="-6" y="-4" width="12" height="10" fill="#5a3216" />
-        <rect x="-6" y="2"  width="12" height="2"  fill="#ff5d5d" />
-      </g>
-    `;
-    return s;
-  },
+function stickerGarden() {
+  const g = group({ class: 'hot-icon hot-stickers' });
+  g.innerHTML = `
+    <!-- bouquet stems -->
+    <path d="M -6 24 Q -10 4 -16 -10" stroke="#3f8b3a" stroke-width="2.5" fill="none" stroke-linecap="round" />
+    <path d="M  0 26 Q  0 6  0 -16"   stroke="#3f8b3a" stroke-width="2.5" fill="none" stroke-linecap="round" />
+    <path d="M  6 24 Q 10 4 16 -10"   stroke="#3f8b3a" stroke-width="2.5" fill="none" stroke-linecap="round" />
+    <!-- flowers — 5-petal stars -->
+    ${flower(-16, -14, '#ef3e3e')}
+    ${flower(  0, -22, '#a672ff')}
+    ${flower( 16, -14, '#3aa6ff')}
+    <!-- a star sticker peeking in -->
+    <path d="M -22 8 l 4 8 l 8 1 l -6 6 l 2 9 l -8 -5 l -8 5 l 2 -9 l -6 -6 l 8 -1 z" fill="#ffd23f" stroke="#a07b00" stroke-width="1" transform="scale(0.7) translate(-4 6)" />
+    <!-- ribbon at the base -->
+    <path d="M -10 22 Q 0 30 10 22 Q 6 26 0 26 Q -6 26 -10 22 Z" fill="#ff77b1" />
+  `;
+  return g;
+}
+function flower(x, y, color) {
+  return `
+    <g transform="translate(${x} ${y})">
+      <circle cx="0" cy="-6" r="5" fill="${color}" />
+      <circle cx="6" cy="-2" r="5" fill="${color}" />
+      <circle cx="-6" cy="-2" r="5" fill="${color}" />
+      <circle cx="3" cy="6" r="5" fill="${color}" />
+      <circle cx="-3" cy="6" r="5" fill="${color}" />
+      <circle cx="0" cy="0" r="3" fill="#ffd23f" />
+    </g>
+  `;
+}
+
+function closetWardrobe() {
+  const g = group({ class: 'hot-icon hot-closet' });
+  g.innerHTML = `
+    <!-- wardrobe body -->
+    <rect x="-26" y="-30" width="52" height="58" rx="3" fill="#7a4a2a" stroke="#1a1a1a" stroke-width="2" />
+    <rect x="-26" y="-30" width="52" height="58" rx="3" fill="url(#g-shade)" opacity="0.4" />
+    <!-- two doors -->
+    <rect x="-24" y="-28" width="22" height="54" rx="2" fill="#a05a3a" stroke="#1a1a1a" stroke-width="1.5" />
+    <rect x="2"   y="-28" width="22" height="54" rx="2" fill="#a05a3a" stroke="#1a1a1a" stroke-width="1.5" />
+    <!-- knobs -->
+    <circle cx="-6" cy="0" r="2" fill="#ffd23f" />
+    <circle cx="6"  cy="0" r="2" fill="#ffd23f" />
+    <!-- bow on top -->
+    <circle cx="0" cy="-30" r="4" fill="#ef3e3e" />
+    <path d="M -10 -30 L 0 -30 L -4 -38 Z" fill="#ef3e3e" />
+    <path d="M 10 -30 L 0 -30 L 4 -38 Z" fill="#ef3e3e" />
+    <!-- legs -->
+    <rect x="-22" y="28" width="6" height="4" fill="#1a1a1a" />
+    <rect x="16"  y="28" width="6" height="4" fill="#1a1a1a" />
+  `;
+  return g;
+}
+
+const REGISTRY = {
+  library:       libraryTreehouse,
+  phonics:       phonicsCave,
+  cloze:         clozePond,
+  wordPicture:   matchMeadow,
+  buildSentence: sentenceWorkshop,
+  stickerBook:   stickerGarden,
+  closet:        closetWardrobe,
 };
 
 export function buildHotspotIcon(id) {
-  const builder = ICONS[id];
-  if (!builder) {
-    // Safe fallback: an empty bubble interior.
-    return svg();
-  }
-  return builder();
-}
-
-export function listHotspotIconIds() {
-  return Object.keys(ICONS);
+  const fn = REGISTRY[id];
+  return fn ? fn() : null;
 }
