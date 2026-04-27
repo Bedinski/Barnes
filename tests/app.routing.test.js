@@ -12,10 +12,11 @@ beforeEach(() => {
   globalThis.localStorage.clear();
 });
 
-test('createApp() mounts the home scene immediately', () => {
+test('createApp() mounts the home (world-map) scene immediately', () => {
   const root = document.getElementById('app');
   createApp(root);
-  assert.ok(root.querySelector('.scene.home'));
+  // Phase A: the home slot is now the world-map hub.
+  assert.ok(root.querySelector('.scene.world-map'));
 });
 
 test('navigating to library swaps in the library scene', () => {
@@ -23,7 +24,7 @@ test('navigating to library swaps in the library scene', () => {
   const ctx = createApp(root);
   ctx.navigate('library');
   assert.ok(root.querySelector('.scene.library'));
-  assert.equal(root.querySelector('.scene.home'), null);
+  assert.equal(root.querySelector('.scene.world-map'), null);
 });
 
 test('navigating to reader with a bookId swaps in the reader scene', () => {
@@ -52,7 +53,7 @@ test('round-trip back to home unmounts the previous scene', () => {
   const ctx = createApp(root);
   ctx.navigate('library');
   ctx.navigate('home');
-  assert.ok(root.querySelector('.scene.home'));
+  assert.ok(root.querySelector('.scene.world-map'));
   assert.equal(root.querySelector('.scene.library'), null);
 });
 
@@ -60,5 +61,5 @@ test('unknown scene name falls back to home', () => {
   const root = document.getElementById('app');
   const ctx = createApp(root);
   ctx.navigate('does-not-exist');
-  assert.ok(root.querySelector('.scene.home'));
+  assert.ok(root.querySelector('.scene.world-map'));
 });

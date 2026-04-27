@@ -3,6 +3,7 @@
 // scenes and threads optional data (e.g. bookId for the reader).
 
 import * as home          from './scenes/home.js';
+import * as worldMap      from './scenes/worldMap.js';
 import * as library       from './scenes/library.js';
 import * as reader        from './scenes/reader.js';
 import * as wordPicture   from './scenes/wordPicture.js';
@@ -12,9 +13,19 @@ import * as parent        from './scenes/parent.js';
 import * as phonics       from './scenes/phonics.js';
 import { cancelSpeech }   from './audio/speech.js';
 import { tickStreak }     from './components/streak.js';
+import { mountSvgFilters } from './components/svgFilters.js';
 
+// Phase A: the world-map hub is the new home. We alias 'home' →
+// worldMap so all the existing "Back to Home" buttons in other scenes
+// land on the new hub. The original home.js stays around for tests
+// (tests/scenes.home.test.js imports from it directly) and as a
+// fallback if we ever need to revert.
 const SCENES = {
-  home, library, reader, wordPicture, buildSentence, cloze, parent, phonics,
+  home: worldMap,
+  worldMap,
+  library, reader, wordPicture, buildSentence, cloze, parent, phonics,
+  // Keep the legacy card grid reachable for diagnostics.
+  homeLegacy: home,
 };
 
 export function createApp(container) {
@@ -38,5 +49,8 @@ if (typeof document !== 'undefined' && document.getElementById('app')) {
   // Tick the daily reading streak the moment the app boots — opening
   // the app counts as showing up to read.
   try { tickStreak(); } catch (_) { /* noop */ }
+  // Mount the shared SVG filter <defs> once before the first scene
+  // paints so .crayola-bg picks up paper-grain immediately.
+  try { mountSvgFilters(); } catch (_) { /* noop */ }
   createApp(document.getElementById('app'));
 }

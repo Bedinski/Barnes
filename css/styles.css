@@ -24,6 +24,24 @@
   --tap:          88px;
   --radius:       22px;
   --font:         'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', system-ui, sans-serif;
+
+  /* Crayola-grade rainbow tokens (Phase A). Used by crayola.css + new
+     scenes; existing scenes still read --c-sky/--c-grass/etc above so
+     nothing breaks. */
+  --c-red:        #ef3e3e;
+  --c-orange:     #ff8a3d;
+  --c-yellow:     #ffd23f;
+  --c-green:      #54c45e;
+  --c-blue:       #3aa6ff;
+  --c-purple:     #a672ff;
+  --c-pink:       #ff77b1;
+  --c-paper:      #fff7e8;
+  --c-paper-edge: #f4e4c5;
+  --c-ink:        #2a2a3a;
+
+  /* Hand-lettered display stack. Bubblegum Sans + Fredoka load from
+     Google Fonts (see index.html). Comic Sans is the offline fallback. */
+  --font-display: 'Bubblegum Sans', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
