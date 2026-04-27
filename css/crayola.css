@@ -123,30 +123,44 @@
 }
 
 /* Hotspot = a tappable place on the map. SVG <g> with .hotspot.
-   Important: we deliberately do NOT use a hover transform here. A scale
-   transform on a circular SVG <g> can push the cursor outside the
-   bubble at certain pointer positions, which ends the hover, shrinks
-   the bubble, re-enters the hover, and so on — producing a fast
-   stutter that makes tapping nearly impossible. Instead we use a
-   non-positional emphasis (brightness + heavier drop-shadow). The
-   :active rule still uses scale because it only fires while held
-   down, so it can't oscillate. */
+   Important: we apply NO transform, NO filter, and NO transition to
+   the parent <g> itself. Any of those can re-rasterize or briefly
+   shift the hit-test region of the SVG group, causing the cursor to
+   fall outside the bubble, ending hover, then re-entering — visually
+   a seizure-like stutter. Instead all hover / press feedback lives on
+   CHILD elements (the colored bubble + the inner cream ring), changed
+   via properties (fill, stroke-width, opacity) that don't move the
+   group at all. */
 .world-map .hotspot {
   cursor: pointer;
-  transition: filter 180ms ease-out, transform 120ms ease-out;
-  transform-box: fill-box;
-  transform-origin: center;
 }
-.world-map .hotspot:hover,
-.world-map .hotspot:focus-visible {
-  filter: brightness(1.12) drop-shadow(0 6px 6px rgba(0, 0, 0, 0.18));
-  outline: none;
+.world-map .hotspot:focus { outline: none; }
+.world-map .hotspot:focus-visible .hotspot-bubble {
+  stroke: var(--c-blue);
+  stroke-width: 6;
 }
-.world-map .hotspot:active { transform: scale(0.97); }
 
 .world-map .hotspot-bubble {
   /* The big colored disk under each place. */
   filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.08));
+  transition: stroke-width 120ms ease-out;
+}
+/* Hover feedback: thicken the bubble outline + brighten the cream
+   center. No transform, no filter change on the group. */
+.world-map .hotspot:hover .hotspot-bubble {
+  stroke-width: 6;
+}
+.world-map .hotspot:hover .hotspot-inner {
+  opacity: 1;
+}
+.world-map .hotspot-inner {
+  transition: opacity 120ms ease-out;
+}
+/* Pressed (mousedown / touch): briefly dim the bubble so the tap is
+   visible. opacity is a pure-repaint property — no layout, no
+   geometry change, can't oscillate. */
+.world-map .hotspot:active .hotspot-bubble {
+  opacity: 0.78;
 }
 .world-map .hotspot-label {
   font-family: var(--font-display);
