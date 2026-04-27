@@ -8,7 +8,7 @@
 import {
   buildBuddy, getBuddy, setBuddy,
   isAccessoryUnlocked,
-} from '../components/buddy.js?v=3';
+} from '../components/buddy.js?v=4';
 import { ACCESSORIES } from '../data/accessories.js';
 import { attach as animate } from '../characters/animator.js';
 import { speak } from '../audio/speech.js';

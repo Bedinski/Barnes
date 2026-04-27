@@ -6,7 +6,7 @@ import { SENTENCES } from '../data/sentences.js';
 import { allBookPhrases } from '../data/books.js';
 import { buildScene, listScenes } from '../characters/sceneArt.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';
-import { BuddyCorner } from '../components/buddy.js?v=3';
+import { BuddyCorner } from '../components/buddy.js?v=4';
 import { bumpStat } from '../components/badges.js';
 import { speak } from '../audio/speech.js';
 import { success, tryAgain, tap as tapSound } from '../audio/sounds.js';

@@ -44,10 +44,14 @@ export function buildKoala({ variant = 'classic', size = 'medium', accessory = n
       <ellipse cx="128" cy="200" rx="22" ry="14" fill="${tone.shade}" />
     </g>
 
-    <!-- body -->
+    <!-- body — base fur + painterly highlight + shade overlay for depth -->
     <g id="body" class="body">
       <ellipse cx="100" cy="160" rx="62" ry="55" fill="${tone.fur}" />
+      <ellipse cx="100" cy="160" rx="62" ry="55" fill="url(#g-shade)" />
+      <ellipse cx="84"  cy="138" rx="40" ry="22" fill="url(#g-highlight)" />
       <ellipse id="belly" class="belly" cx="100" cy="170" rx="42" ry="38" fill="var(--c-koala-belly)" />
+      <ellipse cx="100" cy="170" rx="42" ry="38" fill="url(#g-shade)" opacity="0.7" />
+      <ellipse cx="86"  cy="152" rx="22" ry="14" fill="url(#g-highlight)" opacity="0.7" />
     </g>
 
     <!-- arms (over body) -->
@@ -61,6 +65,8 @@ export function buildKoala({ variant = 'classic', size = 'medium', accessory = n
     <!-- head -->
     <g id="head" class="head">
       <ellipse cx="100" cy="100" rx="62" ry="58" fill="${tone.fur}" />
+      <ellipse cx="100" cy="100" rx="62" ry="58" fill="url(#g-shade)" />
+      <ellipse cx="80"  cy="76"  rx="38" ry="22" fill="url(#g-highlight)" />
 
       <!-- eye whites -->
       <ellipse class="eye-white" cx="78"  cy="98" rx="11" ry="13" fill="#ffffff" />

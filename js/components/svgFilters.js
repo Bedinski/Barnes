@@ -144,6 +144,44 @@ export function mountSvgFilters(doc = (typeof document !== 'undefined' ? documen
     defs.appendChild(rg);
   }
 
+  // Generic painterly overlays — a white-fading-to-transparent radial
+  // gradient (highlight) and its dark twin (shadow). Layered over a
+  // flat character body, they create the "lit-from-above" depth
+  // illusion without needing one gradient per fur-tone variant.
+  const HIGHLIGHT = doc.createElementNS(SVG_NS, 'radialGradient');
+  HIGHLIGHT.setAttribute('id', 'g-highlight');
+  HIGHLIGHT.setAttribute('cx', '50%'); HIGHLIGHT.setAttribute('cy', '50%');
+  HIGHLIGHT.setAttribute('r',  '50%');
+  for (const stop of [
+    { o: '0%',   c: '#ffffff', op: '0.55' },
+    { o: '60%',  c: '#ffffff', op: '0.10' },
+    { o: '100%', c: '#ffffff', op: '0' },
+  ]) {
+    const s = doc.createElementNS(SVG_NS, 'stop');
+    s.setAttribute('offset', stop.o);
+    s.setAttribute('stop-color', stop.c);
+    s.setAttribute('stop-opacity', stop.op);
+    HIGHLIGHT.appendChild(s);
+  }
+  defs.appendChild(HIGHLIGHT);
+
+  const SHADE = doc.createElementNS(SVG_NS, 'radialGradient');
+  SHADE.setAttribute('id', 'g-shade');
+  SHADE.setAttribute('cx', '50%'); SHADE.setAttribute('cy', '50%');
+  SHADE.setAttribute('r',  '50%');
+  for (const stop of [
+    { o: '0%',   c: '#000000', op: '0' },
+    { o: '60%',  c: '#000000', op: '0.05' },
+    { o: '100%', c: '#000000', op: '0.22' },
+  ]) {
+    const s = doc.createElementNS(SVG_NS, 'stop');
+    s.setAttribute('offset', stop.o);
+    s.setAttribute('stop-color', stop.c);
+    s.setAttribute('stop-opacity', stop.op);
+    SHADE.appendChild(s);
+  }
+  defs.appendChild(SHADE);
+
   // Linear sky gradient used as the world-map backdrop inside the SVG.
   const sky = doc.createElementNS(SVG_NS, 'linearGradient');
   sky.setAttribute('id', 'g-sky-meadow');

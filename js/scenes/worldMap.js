@@ -9,13 +9,14 @@
 // The buddy on the hub is rendered with the existing buildKoala. Phase
 // B will swap this for buildBuddy() so the kid's chosen buddy appears.
 
-import { buildBuddy } from '../components/buddy.js?v=3';
+import { buildBuddy } from '../components/buddy.js?v=4';
 import { attach as animate } from '../characters/animator.js';
 import { buildStarCounter }   from '../components/stars.js';
 import { buildStreakChip }    from '../components/streak.js';
 import { buildSettingsButton } from '../components/settings.js';
 import { walkTo } from '../components/walkTo.js';
 import { attachAmbient } from '../components/ambient.js';
+import { buildHotspotIcon } from '../components/hotspotIcons.js?v=4';
 import { speak } from '../audio/speech.js';
 import { tap as tapSound } from '../audio/sounds.js';
 
@@ -85,15 +86,26 @@ function buildHotspot(spot) {
     opacity: 0.45,
     'pointer-events': 'none',
   }, art);
-  // Big glyph in the bubble center.
-  const glyph = el('text', {
-    class: 'hotspot-emoji',
-    x: 0, y: 12,
-    'text-anchor': 'middle',
-    'font-size': 48,
-    'pointer-events': 'none',
-  }, art);
-  glyph.textContent = spot.glyph;
+  // Illustrated icon on top of the bubble. Each icon is hand-drawn as
+  // a small SVG group (see js/components/hotspotIcons.js) so the place
+  // reads as a real little scene — treehouse, cave, pond, etc. — not a
+  // generic emoji circle.
+  const icon = buildHotspotIcon(spot.id);
+  if (icon) {
+    icon.setAttribute('class', `${icon.getAttribute('class') || ''} hotspot-icon`);
+    icon.setAttribute('pointer-events', 'none');
+    art.appendChild(icon);
+  } else {
+    // Fallback if a hotspot id has no illustrated icon registered.
+    const glyph = el('text', {
+      class: 'hotspot-emoji',
+      x: 0, y: 12,
+      'text-anchor': 'middle',
+      'font-size': 48,
+      'pointer-events': 'none',
+    }, art);
+    glyph.textContent = spot.glyph;
+  }
 
   // Wooden label plate under the bubble. Sits OUTSIDE the soft-shadow
   // group so its own contrast stays sharp.

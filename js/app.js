@@ -3,11 +3,11 @@
 // scenes and threads optional data (e.g. bookId for the reader).
 
 import * as home          from './scenes/home.js';
-import * as worldMap      from './scenes/worldMap.js?v=3';
+import * as worldMap      from './scenes/worldMap.js?v=4';
 import * as library       from './scenes/library.js';
 import * as reader        from './scenes/reader.js';
 import * as wordPicture   from './scenes/wordPicture.js';
-import * as buildSentence from './scenes/buildSentence.js?v=3';
+import * as buildSentence from './scenes/buildSentence.js?v=4';
 import * as cloze         from './scenes/cloze.js';
 import * as parent        from './scenes/parent.js';
 import * as phonics       from './scenes/phonics.js';
@@ -15,8 +15,8 @@ import * as onboarding    from './scenes/onboarding.js';
 import * as closet        from './scenes/closet.js';
 import { cancelSpeech }   from './audio/speech.js';
 import { tickStreak }     from './components/streak.js';
-import { mountSvgFilters } from './components/svgFilters.js?v=3';
-import { hasBuddy }        from './components/buddy.js?v=3';
+import { mountSvgFilters } from './components/svgFilters.js?v=4';
+import { hasBuddy }        from './components/buddy.js?v=4';
 
 // Phase A: the world-map hub is the new home. We alias 'home' →
 // worldMap so all the existing "Back to Home" buttons in other scenes

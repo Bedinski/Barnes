@@ -38,10 +38,14 @@ export function buildPanda({ variant = 'classic', size = 'medium', accessory = n
       <ellipse cx="128" cy="200" rx="22" ry="14" fill="${tone.dark}" />
     </g>
 
-    <!-- body (white) -->
+    <!-- body (white) — painterly highlight + shade overlay for depth -->
     <g id="body" class="body">
       <ellipse cx="100" cy="160" rx="62" ry="55" fill="${tone.white}" />
+      <ellipse cx="100" cy="160" rx="62" ry="55" fill="url(#g-shade)" opacity="0.85" />
+      <ellipse cx="84"  cy="138" rx="40" ry="22" fill="url(#g-highlight)" />
       <ellipse id="belly" class="belly" cx="100" cy="170" rx="42" ry="38" fill="#f7f1f1" />
+      <ellipse cx="100" cy="170" rx="42" ry="38" fill="url(#g-shade)" opacity="0.55" />
+      <ellipse cx="86"  cy="152" rx="22" ry="14" fill="url(#g-highlight)" opacity="0.7" />
     </g>
 
     <!-- arms (black, in front of body) -->
@@ -65,7 +69,9 @@ export function buildPanda({ variant = 'classic', size = 'medium', accessory = n
 
     <!-- head -->
     <g id="head" class="head">
-      <circle cx="100" cy="100" r="60" fill="${tone.white}" />
+      <circle  cx="100" cy="100" r="60" fill="${tone.white}" />
+      <circle  cx="100" cy="100" r="60" fill="url(#g-shade)" opacity="0.85" />
+      <ellipse cx="80"  cy="76"  rx="36" ry="20" fill="url(#g-highlight)" />
 
       <!-- iconic black eye-patches -->
       <ellipse cx="78"  cy="100" rx="14" ry="18" fill="${tone.dark}" transform="rotate(-15 78 100)" />

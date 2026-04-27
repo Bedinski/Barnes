@@ -15,7 +15,7 @@ import { allBookPhrases }     from '../data/books.js';
 import { ALL_SIGHT_WORDS, ALLOWED_NOUNS } from '../data/words.js';
 import { buildScene }         from '../characters/sceneArt.js';
 import { buildStarCounter, rewardStar } from './../components/stars.js';
-import { BuddyCorner }        from '../components/buddy.js?v=3';
+import { BuddyCorner }        from '../components/buddy.js?v=4';
 import { bumpStat }           from '../components/badges.js';
 import { speak }              from '../audio/speech.js';
 import { success, tryAgain, tap as tapSound } from '../audio/sounds.js';
