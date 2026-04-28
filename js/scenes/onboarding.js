@@ -1,37 +1,38 @@
 // First-launch onboarding (Phase B). A kid-friendly 3-step flow:
-//   1. Pick a species   (koala or panda)
-//   2. Pick a fur tone  (variant — depends on species)
-//   3. Pick a name      (from a suggestion list, with "🎲 Surprise me")
+//   1. Pick a hero    (Shark Hero or Octopus Hero — internal ids stay
+//                      "koala"/"panda" for buddy-storage compat)
+//   2. Pick a color   (variant — depends on hero)
+//   3. Pick a name    (from a suggestion list, with "🎲 Surprise me")
 // Each step speaks a friendly prompt and shows the candidate buddy
 // big and centered. Persists choices via setBuddy() and routes to the
 // world map when done.
 //
 // We do NOT include accessory selection here — every default accessory
 // is unlocked from day one, and the closet handles equipping. Keeping
-// onboarding to 3 steps respects the "no-text required" Crayola rule
-// (each step is a single tap with voice narration).
+// onboarding to 3 steps respects the "no-text required" rule (each
+// step is a single tap with voice narration).
 
-import { setBuddy, NAME_SUGGESTIONS } from '../components/buddy.js?v=5';
-import { buildKoala } from '../characters/koala.js?v=5';
-import { buildPanda } from '../characters/panda.js?v=5';
+import { setBuddy, NAME_SUGGESTIONS } from '../components/buddy.js?v=6';
+import { buildKoala } from '../characters/koala.js?v=6';
+import { buildPanda } from '../characters/panda.js?v=6';
 import { attach as animate } from '../characters/animator.js';
 import { speak } from '../audio/speech.js';
 import { tap as tapSound, success } from '../audio/sounds.js';
 
 const SPECIES_OPTIONS = [
-  { id: 'koala', label: 'Koala', defaultVariant: 'classic', defaultAccessory: 'leaf' },
-  { id: 'panda', label: 'Panda', defaultVariant: 'classic', defaultAccessory: 'bamboo' },
+  { id: 'koala', label: 'Shark Hero',   defaultVariant: 'classic', defaultAccessory: 'leaf' },
+  { id: 'panda', label: 'Octopus Hero', defaultVariant: 'classic', defaultAccessory: 'bamboo' },
 ];
 
 const VARIANTS_BY_SPECIES = {
   koala: [
-    { id: 'classic', label: 'Grey'  },
-    { id: 'warm',    label: 'Warm'  },
-    { id: 'blue',    label: 'Blue'  },
+    { id: 'classic', label: 'Deep Blue' },
+    { id: 'warm',    label: 'Lava Red'  },
+    { id: 'blue',    label: 'Ice Cyan'  },
   ],
   panda: [
-    { id: 'classic', label: 'Classic' },
-    { id: 'pinky',   label: 'Pinky'   },
+    { id: 'classic', label: 'Violet' },
+    { id: 'pinky',   label: 'Pink'   },
   ],
 };
 
@@ -82,7 +83,7 @@ export function mount(container, ctx) {
     choices.className = 'onb-choices';
 
     if (step === 1) {
-      prompt.textContent = 'Pick your reading buddy!';
+      prompt.textContent = 'Pick your hero!';
       const preview = buildCharacter(chosenSpecies, chosenVariant);
       character.appendChild(preview);
       const h = animate(preview);
@@ -108,7 +109,7 @@ export function mount(container, ctx) {
         choices.appendChild(btn);
       });
 
-      speakTimer = setTimeout(() => speak('Pick your reading buddy! Tap koala or panda.'), 350);
+      speakTimer = setTimeout(() => speak('Pick your hero! Tap shark or octopus.'), 350);
     }
 
     else if (step === 2) {

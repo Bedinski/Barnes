@@ -1,24 +1,30 @@
-// Book library — early-reader stories featuring koalas & pandas.
-// Every word must appear in ALL_SIGHT_WORDS or ALLOWED_NOUNS (words.js)
-// and every sceneId must resolve in sceneArt.js.
-// Difficulty is in `level` (1=easiest, 3=hardest). Later books can be
-// added by appending to this array.
+// Book library — early-reader stories featuring Shark Hero and Octopus Hero.
+//
+// Internal IDs preserve the legacy "koala"/"panda" sceneId references
+// (which now visually render Shark Hero / Octopus Hero in underwater
+// scenes) so the data layer stays compatible. The book TEXT a kid
+// actually reads has been rewritten to match the new sea-hero world:
+// kelp instead of trees, treasure chests instead of logs, pearls
+// instead of balls, sea instead of grass, mask instead of hat.
+//
+// Every word still validates against ALL_SIGHT_WORDS or ALLOWED_NOUNS
+// (words.js) and every sceneId still resolves in sceneArt.js.
 
 export const BOOKS = [
   {
-    id: 'where-is-koala',
-    title: 'Where Is Koala?',
+    id: 'where-is-shark',
+    title: 'Where Is Shark?',
     level: 1,
     cover: { character: 'koala', accessory: null, variant: 'classic' },
     pages: [
-      { text: 'Look! A little koala.',        sceneId: 'little-koala' },
-      { text: 'The koala is in the tree.',    sceneId: 'koala-in-tree' },
-      { text: 'The koala is under the tree.', sceneId: 'koala-under-tree' },
-      { text: 'The koala can jump!',          sceneId: 'koala-jumping' },
+      { text: 'Look! A little shark.',         sceneId: 'little-koala' },
+      { text: 'The shark is in the kelp.',     sceneId: 'koala-in-tree' },
+      { text: 'The shark is under the kelp.',  sceneId: 'koala-under-tree' },
+      { text: 'The shark can jump!',           sceneId: 'koala-jumping' },
     ],
     comprehension: [
       {
-        question: 'Where was the koala?',
+        question: 'Where was the shark?',
         options: [
           { sceneId: 'koala-in-tree',    correct: true  },
           { sceneId: 'koala-on-log',     correct: false },
@@ -28,16 +34,16 @@ export const BOOKS = [
   },
 
   {
-    id: 'panda-and-koala-play',
-    title: 'Panda and Koala Play',
+    id: 'shark-and-octopus-play',
+    title: 'Shark and Octopus Play',
     level: 2,
     cover: { character: 'panda', accessory: 'bamboo', variant: 'classic' },
     pages: [
-      { text: 'This is a panda.',          sceneId: 'little-panda' },
-      { text: 'This is a koala.',          sceneId: 'brown-koala' },
-      { text: 'They like to play.',        sceneId: 'play-ball' },
-      { text: 'They play in the grass.',   sceneId: 'pandas-in-grass' },
-      { text: 'The sun is up.',            sceneId: 'sun-up' },
+      { text: 'This is an octopus.',        sceneId: 'little-panda' },
+      { text: 'This is a shark.',           sceneId: 'brown-koala' },
+      { text: 'They like to play.',         sceneId: 'play-ball' },
+      { text: 'They play in the sea.',      sceneId: 'pandas-in-grass' },
+      { text: 'The sun is up.',             sceneId: 'sun-up' },
     ],
     comprehension: [
       {
@@ -58,19 +64,19 @@ export const BOOKS = [
   },
 
   {
-    id: 'koala-goes-up',
-    title: 'Koala Goes Up',
+    id: 'shark-goes-up',
+    title: 'Shark Goes Up',
     level: 1,
     cover: { character: 'koala', accessory: null, variant: 'classic' },
     pages: [
-      { text: 'The koala can jump.',         sceneId: 'koala-jumping' },
-      { text: 'The koala went up the tree.', sceneId: 'koala-in-tree' },
-      { text: 'The koala saw the sun.',      sceneId: 'sun-up' },
-      { text: 'The koala is up.',            sceneId: 'koala-in-tree' },
+      { text: 'The shark can jump.',          sceneId: 'koala-jumping' },
+      { text: 'The shark went up the kelp.',  sceneId: 'koala-in-tree' },
+      { text: 'The shark saw the sun.',       sceneId: 'sun-up' },
+      { text: 'The shark is up.',             sceneId: 'koala-in-tree' },
     ],
     comprehension: [
       {
-        question: 'Where did the koala go?',
+        question: 'Where did the shark go?',
         options: [
           { sceneId: 'koala-in-tree', correct: true  },
           { sceneId: 'koala-on-log',  correct: false },
@@ -85,10 +91,10 @@ export const BOOKS = [
     level: 1,
     cover: { character: 'koala', accessory: null, variant: 'warm' },
     pages: [
-      { text: 'The sun is yellow.',                sceneId: 'sun-up' },
-      { text: 'The koala is brown.',               sceneId: 'brown-koala' },
-      { text: 'The panda is black and white.',     sceneId: 'little-panda' },
-      { text: 'We like all of them.',              sceneId: 'play-ball' },
+      { text: 'The sun is yellow.',                 sceneId: 'sun-up' },
+      { text: 'The shark is brown.',                sceneId: 'brown-koala' },
+      { text: 'The octopus is funny.',              sceneId: 'funny-panda' },
+      { text: 'We like all of them.',               sceneId: 'play-ball' },
     ],
     comprehension: [
       {
@@ -102,27 +108,27 @@ export const BOOKS = [
   },
 
   {
-    id: 'pandas-in-grass',
-    title: 'Pandas in the Grass',
+    id: 'octopuses-in-the-sea',
+    title: 'Octopuses in the Sea',
     level: 2,
     cover: { character: 'panda', accessory: 'bamboo', variant: 'pinky' },
     pages: [
-      { text: 'Two pandas play in the grass.',     sceneId: 'pandas-in-grass' },
-      { text: 'They have a ball.',                 sceneId: 'panda-with-ball' },
-      { text: 'The pandas like to eat bamboo.',    sceneId: 'panda-eats-bamboo' },
-      { text: 'A koala came to play.',             sceneId: 'little-koala' },
-      { text: 'They all play with the ball.',      sceneId: 'play-ball' },
+      { text: 'Two octopuses play in the sea.',     sceneId: 'pandas-in-grass' },
+      { text: 'They have a pearl.',                 sceneId: 'panda-with-ball' },
+      { text: 'The octopuses like to eat.',         sceneId: 'panda-eats-bamboo' },
+      { text: 'A shark came to play.',              sceneId: 'little-koala' },
+      { text: 'They all play with the pearl.',      sceneId: 'play-ball' },
     ],
     comprehension: [
       {
-        question: 'What did the pandas eat?',
+        question: 'What did the octopuses do?',
         options: [
           { sceneId: 'panda-eats-bamboo', correct: true  },
           { sceneId: 'koala-with-hat',    correct: false },
         ],
       },
       {
-        question: 'Where do the pandas play?',
+        question: 'Where do the octopuses play?',
         options: [
           { sceneId: 'pandas-in-grass', correct: true  },
           { sceneId: 'koala-in-tree',   correct: false },
@@ -137,11 +143,11 @@ export const BOOKS = [
     level: 2,
     cover: { character: 'panda', accessory: null, variant: 'classic' },
     pages: [
-      { text: 'I see a koala.',              sceneId: 'little-koala' },
-      { text: 'You see a panda.',            sceneId: 'little-panda' },
-      { text: 'The koala can jump.',         sceneId: 'koala-jumping' },
-      { text: 'The panda can eat bamboo.',   sceneId: 'panda-eats-bamboo' },
-      { text: 'We can play, too.',           sceneId: 'play-ball' },
+      { text: 'I see a shark.',               sceneId: 'little-koala' },
+      { text: 'You see an octopus.',          sceneId: 'little-panda' },
+      { text: 'The shark can jump.',          sceneId: 'koala-jumping' },
+      { text: 'The octopus can eat.',         sceneId: 'panda-eats-bamboo' },
+      { text: 'We can play, too.',            sceneId: 'play-ball' },
     ],
     comprehension: [
       {
@@ -155,28 +161,28 @@ export const BOOKS = [
   },
 
   {
-    id: 'what-did-koala-see',
-    title: 'What Did Koala See?',
+    id: 'what-did-shark-see',
+    title: 'What Did Shark See?',
     level: 2,
     cover: { character: 'koala', accessory: 'leaf', variant: 'warm' },
     pages: [
-      { text: 'The koala went out to play.',    sceneId: 'little-koala' },
-      { text: 'The koala saw a big tree.',      sceneId: 'koala-under-tree' },
-      { text: 'The koala saw the yellow sun.',  sceneId: 'sun-up' },
-      { text: 'The koala saw a panda.',         sceneId: 'little-panda' },
-      { text: 'The panda can eat bamboo.',      sceneId: 'panda-eats-bamboo' },
-      { text: 'They like to play with a ball.', sceneId: 'play-ball' },
+      { text: 'The shark went out to play.',    sceneId: 'little-koala' },
+      { text: 'The shark saw a big kelp.',      sceneId: 'koala-under-tree' },
+      { text: 'The shark saw the yellow sun.',  sceneId: 'sun-up' },
+      { text: 'The shark saw an octopus.',      sceneId: 'little-panda' },
+      { text: 'The octopus can eat.',           sceneId: 'panda-eats-bamboo' },
+      { text: 'They like to play with a pearl.', sceneId: 'play-ball' },
     ],
     comprehension: [
       {
-        question: 'What did the panda eat?',
+        question: 'What did the octopus do?',
         options: [
           { sceneId: 'panda-eats-bamboo', correct: true  },
           { sceneId: 'play-ball',         correct: false },
         ],
       },
       {
-        question: 'What did the koala see in the sky?',
+        question: 'What did the shark see up high?',
         options: [
           { sceneId: 'sun-up',           correct: true  },
           { sceneId: 'koala-under-tree', correct: false },
@@ -186,39 +192,39 @@ export const BOOKS = [
   },
 
   {
-    id: 'pretty-red-hat',
-    title: 'The Pretty Red Hat',
+    id: 'the-red-mask',
+    title: 'The Red Mask',
     level: 3,
     cover: { character: 'koala', accessory: 'hat', variant: 'classic' },
     pages: [
-      { text: 'The koala has a pretty hat.',           sceneId: 'koala-with-hat' },
-      { text: 'The hat is red.',                       sceneId: 'koala-with-hat' },
-      { text: 'The koala can play with the hat.',      sceneId: 'koala-with-hat' },
-      // CYOA: where does the hat go?
+      { text: 'The shark has a pretty mask.',          sceneId: 'koala-with-hat' },
+      { text: 'The mask is red.',                      sceneId: 'koala-with-hat' },
+      { text: 'The shark can play with the mask.',     sceneId: 'koala-with-hat' },
+      // CYOA: where does the mask go?
       {
-        text: 'Where will the koala put the hat?',
+        text: 'Where will the shark put the mask?',
         sceneId: 'koala-with-hat',
         choice: {
-          question: 'Where does the hat go?',
+          question: 'Where does the mask go?',
           options: [
-            { label: '🪵 On the log', text: 'The hat is on the log.', sceneId: 'koala-on-log' },
-            { label: '🌳 In the tree', text: 'The hat is in the tree.', sceneId: 'koala-in-tree' },
+            { label: '🪙 On the chest', text: 'The mask is on the chest.', sceneId: 'koala-on-log' },
+            { label: '🌿 In the kelp',  text: 'The mask is in the kelp.',  sceneId: 'koala-in-tree' },
           ],
         },
       },
-      { text: 'The panda saw the hat.',                sceneId: 'little-panda' },
-      { text: 'The panda is funny.',                   sceneId: 'funny-panda' },
+      { text: 'The octopus saw the mask.',             sceneId: 'little-panda' },
+      { text: 'The octopus is funny.',                 sceneId: 'funny-panda' },
     ],
     comprehension: [
       {
-        question: 'Who has the red hat?',
+        question: 'Who has the red mask?',
         options: [
           { sceneId: 'koala-with-hat', correct: true  },
           { sceneId: 'little-panda',   correct: false },
         ],
       },
       {
-        question: 'Who saw the hat?',
+        question: 'Who saw the mask?',
         options: [
           { sceneId: 'little-panda', correct: true  },
           { sceneId: 'sun-up',       correct: false },
@@ -228,35 +234,33 @@ export const BOOKS = [
   },
 
   {
-    id: 'three-little-koalas',
-    title: 'Three Little Koalas',
+    id: 'three-little-sharks',
+    title: 'Three Little Sharks',
     level: 3,
     cover: { character: 'koala', accessory: 'hat', variant: 'warm' },
     pages: [
-      { text: 'Look at the three koalas.', sceneId: 'three-koalas' },
-      { text: 'One koala is brown.',       sceneId: 'brown-koala' },
-      { text: 'One koala has a red hat.',  sceneId: 'koala-with-hat' },
-      // Choose-your-own-adventure: the child picks the play activity.
-      // Both branches use existing scenes + known vocabulary so they're
-      // fully decodable, and they converge at the next page.
+      { text: 'Look at the three sharks.',  sceneId: 'three-koalas' },
+      { text: 'One shark is brown.',        sceneId: 'brown-koala' },
+      { text: 'One shark has a red mask.',  sceneId: 'koala-with-hat' },
+      // Choose-your-own-adventure: pearl or mask play.
       {
-        text: 'The koalas want to play.',
+        text: 'The sharks want to play.',
         sceneId: 'three-koalas',
         choice: {
           question: 'What do they play with?',
           options: [
-            { label: '⚽ A ball', text: 'They play with a ball.', sceneId: 'play-ball' },
-            { label: '🎩 A hat',  text: 'They play with a hat.',  sceneId: 'koala-with-hat' },
+            { label: '🪩 A pearl', text: 'They play with a pearl.', sceneId: 'play-ball' },
+            { label: '🥷 A mask',  text: 'They play with a mask.',  sceneId: 'koala-with-hat' },
           ],
         },
       },
-      { text: 'The koalas saw a panda.',   sceneId: 'little-panda' },
-      { text: 'The panda is funny.',       sceneId: 'funny-panda' },
-      { text: 'They all like to play.',    sceneId: 'play-ball' },
+      { text: 'The sharks saw an octopus.', sceneId: 'little-panda' },
+      { text: 'The octopus is funny.',      sceneId: 'funny-panda' },
+      { text: 'They all like to play.',     sceneId: 'play-ball' },
     ],
     comprehension: [
       {
-        question: 'Which koala had a hat?',
+        question: 'Which shark had a mask?',
         options: [
           { sceneId: 'koala-with-hat', correct: true  },
           { sceneId: 'brown-koala',    correct: false },

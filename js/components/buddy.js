@@ -18,8 +18,8 @@
 // valid default from getBuddy() means existing scene tests that never
 // seed kpr.buddy keep working.
 
-import { buildKoala } from '../characters/koala.js?v=5';
-import { buildPanda } from '../characters/panda.js?v=5';
+import { buildKoala } from '../characters/koala.js?v=6';
+import { buildPanda } from '../characters/panda.js?v=6';
 import { attach as animate } from '../characters/animator.js';
 import { getStats } from './badges.js';
 import { ACCESSORIES, accessoriesForSpecies } from '../data/accessories.js';
@@ -28,16 +28,17 @@ const KEY_BUDDY        = 'kpr.buddy';
 const KEY_UNLOCKS      = 'kpr.buddyAccessories';
 
 const DEFAULT_BUDDY = Object.freeze({
-  species:   'koala',
+  species:   'koala',   // legacy id — renders as Shark Hero
   variant:   'classic',
-  accessory: 'leaf',
-  name:      'Koko',
+  accessory: 'leaf',    // legacy id — renders as Hero Emblem
+  name:      'Finn',
 });
 
-// Stable list of name suggestions for the onboarding picker. Order is
-// preserved so the auto-name button can rotate through deterministically.
+// Stable list of name suggestions for the onboarding picker. Sea-hero
+// themed; order is preserved so the auto-name button can rotate
+// through deterministically.
 export const NAME_SUGGESTIONS = [
-  'Koko', 'Bo', 'Mango', 'Ash', 'Bea', 'Pip', 'Sunny', 'Clover',
+  'Finn', 'Bo', 'Reef', 'Tide', 'Splash', 'Coral', 'Pearl', 'Marina',
 ];
 
 function readJSON(key, fallback) {

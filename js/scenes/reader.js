@@ -8,8 +8,8 @@
 
 import { getBook, BOOKS } from '../data/books.js';
 import { buildScene } from '../characters/sceneArt.js';
-import { buildKoala } from '../characters/koala.js?v=5';
-import { buildBuddy } from '../components/buddy.js?v=5';
+import { buildKoala } from '../characters/koala.js?v=6';
+import { buildBuddy } from '../components/buddy.js?v=6';
 import { attach as animate } from '../characters/animator.js';
 import { makeSceneInteractive } from '../characters/interactive.js';
 import { buildStarCounter, rewardStar } from '../components/stars.js';
