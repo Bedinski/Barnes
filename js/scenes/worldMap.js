@@ -9,14 +9,14 @@
 // The buddy on the hub is rendered with the existing buildKoala. Phase
 // B will swap this for buildBuddy() so the kid's chosen buddy appears.
 
-import { buildBuddy } from '../components/buddy.js?v=6';
+import { buildBuddy } from '../components/buddy.js?v=7';
 import { attach as animate } from '../characters/animator.js';
 import { buildStarCounter }   from '../components/stars.js';
 import { buildStreakChip }    from '../components/streak.js';
 import { buildSettingsButton } from '../components/settings.js';
 import { walkTo } from '../components/walkTo.js';
 import { attachAmbient } from '../components/ambient.js';
-import { buildHotspotIcon } from '../components/hotspotIcons.js?v=6';
+import { buildHotspotIcon } from '../components/hotspotIcons.js?v=7';
 import { speak } from '../audio/speech.js';
 import { tap as tapSound } from '../audio/sounds.js';
 

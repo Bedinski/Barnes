@@ -5,8 +5,8 @@
 // instead of trees, sunken treasure chests instead of logs, glowing
 // pearl orbs instead of balls, sun shafts instead of grass meadows).
 
-import { buildKoala } from './koala.js?v=6';
-import { buildPanda } from './panda.js?v=6';
+import { buildKoala } from './koala.js?v=7';
+import { buildPanda } from './panda.js?v=7';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 

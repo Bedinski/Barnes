@@ -12,9 +12,9 @@
 // onboarding to 3 steps respects the "no-text required" rule (each
 // step is a single tap with voice narration).
 
-import { setBuddy, NAME_SUGGESTIONS } from '../components/buddy.js?v=6';
-import { buildKoala } from '../characters/koala.js?v=6';
-import { buildPanda } from '../characters/panda.js?v=6';
+import { setBuddy, NAME_SUGGESTIONS } from '../components/buddy.js?v=7';
+import { buildKoala } from '../characters/koala.js?v=7';
+import { buildPanda } from '../characters/panda.js?v=7';
 import { attach as animate } from '../characters/animator.js';
 import { speak } from '../audio/speech.js';
 import { tap as tapSound, success } from '../audio/sounds.js';

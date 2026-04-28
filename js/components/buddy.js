@@ -18,8 +18,8 @@
 // valid default from getBuddy() means existing scene tests that never
 // seed kpr.buddy keep working.
 
-import { buildKoala } from '../characters/koala.js?v=6';
-import { buildPanda } from '../characters/panda.js?v=6';
+import { buildKoala } from '../characters/koala.js?v=7';
+import { buildPanda } from '../characters/panda.js?v=7';
 import { attach as animate } from '../characters/animator.js';
 import { getStats } from './badges.js';
 import { ACCESSORIES, accessoriesForSpecies } from '../data/accessories.js';

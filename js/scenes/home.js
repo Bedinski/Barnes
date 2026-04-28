@@ -9,8 +9,8 @@
 // Topbar surfaces the streak chip + earned badges so the child sees
 // their progress every time they come back.
 
-import { buildKoala } from '../characters/koala.js?v=6';
-import { buildPanda } from '../characters/panda.js?v=6';
+import { buildKoala } from '../characters/koala.js?v=7';
+import { buildPanda } from '../characters/panda.js?v=7';
 import { attach as animate } from '../characters/animator.js';
 import { buildStarCounter }   from '../components/stars.js';
 import { buildBadgeGallery }  from '../components/badges.js';
