@@ -1,10 +1,12 @@
 // Scene illustrations for the Sentence-to-Picture and Build-a-Sentence
-// games. Each builder returns an <svg> illustrating one sentence by
-// composing characters from koala.js / panda.js with simple drawn props
-// (tree, log, ball, sun, grass).
+// games. Sea-Hero reskin: sceneIds keep their legacy names
+// ("koala-in-tree" etc.) for test/data compat, but the visuals now
+// show Shark Hero / Octopus Hero in underwater settings (kelp pillars
+// instead of trees, sunken treasure chests instead of logs, glowing
+// pearl orbs instead of balls, sun shafts instead of grass meadows).
 
-import { buildKoala } from './koala.js?v=4';
-import { buildPanda } from './panda.js?v=4';
+import { buildKoala } from './koala.js?v=5';
+import { buildPanda } from './panda.js?v=5';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -13,79 +15,114 @@ function frame() {
   svg.setAttribute('viewBox', '0 0 400 300');
   svg.setAttribute('xmlns', SVG_NS);
   svg.setAttribute('class', 'scene-svg');
-  // Sky + grass backdrop
+  // Underwater backdrop: surface light at top → deep sea at bottom,
+  // with a sandy floor, light shafts, and a few drifting bubbles.
   svg.innerHTML = `
-    <rect x="0" y="0" width="400" height="300" fill="#cdeefd" />
-    <ellipse cx="340" cy="60" rx="40" ry="40" fill="#ffd166" opacity="0.6" />
-    <rect x="0" y="220" width="400" height="80" fill="#a8e6a3" />
+    <defs>
+      <linearGradient id="sa-water" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#bfe5ff" />
+        <stop offset="35%"  stop-color="#5cb1de" />
+        <stop offset="75%"  stop-color="#1e5b97" />
+        <stop offset="100%" stop-color="#0c2748" />
+      </linearGradient>
+      <linearGradient id="sa-sand" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#f0d49a" />
+        <stop offset="100%" stop-color="#c89a5e" />
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="400" height="300" fill="url(#sa-water)" />
+    <path d="M 60 0 L 80 0 L 120 220 L 100 220 Z"   fill="#ffffff" opacity="0.18" />
+    <path d="M 200 0 L 220 0 L 260 200 L 240 200 Z" fill="#ffffff" opacity="0.14" />
+    <path d="M 320 0 L 340 0 L 360 180 L 340 180 Z" fill="#ffffff" opacity="0.12" />
+    <ellipse cx="200" cy="290" rx="280" ry="30" fill="url(#sa-sand)" />
+    <rect x="0" y="270" width="400" height="30" fill="url(#sa-sand)" />
+    <circle cx="50"  cy="60"  r="4"   fill="#c8efff" stroke="#1e5b97" stroke-width="1" opacity="0.7" />
+    <circle cx="80"  cy="100" r="2.5" fill="#c8efff" stroke="#1e5b97" stroke-width="1" opacity="0.65" />
+    <circle cx="350" cy="80"  r="3"   fill="#c8efff" stroke="#1e5b97" stroke-width="1" opacity="0.7" />
+    <circle cx="370" cy="120" r="2"   fill="#c8efff" stroke="#1e5b97" stroke-width="1" opacity="0.6" />
   `;
   return svg;
 }
 
 function place(svg, characterSvg, { x, y, w, rotate = 0 }) {
   const wrapper = document.createElementNS(SVG_NS, 'g');
-  const ratio = w / 200; // character viewBox is 200x220
+  const ratio = w / 200;
   wrapper.setAttribute('transform', `translate(${x} ${y}) scale(${ratio}) rotate(${rotate} 100 110)`);
+  // Pin the inner SVG's size so it doesn't expand to the parent
+  // viewport (the same nested-svg gotcha that bit the world-map buddy).
+  characterSvg.setAttribute('width', '200');
+  characterSvg.setAttribute('height', '220');
   wrapper.appendChild(characterSvg);
   svg.appendChild(wrapper);
 }
 
-function tree(svg, x = 80, y = 100) {
+// "tree" → kelp pillar (seaweed reaching from sand to surface).
+function tree(svg, x = 200, y = 100) {
   const g = document.createElementNS(SVG_NS, 'g');
   g.dataset.label = 'tree';
   g.innerHTML = `
-    <rect x="${x - 8}" y="${y + 60}" width="16" height="120" fill="#8b5a2b" />
-    <circle cx="${x}" cy="${y + 30}" r="60" fill="#6dbf6a" />
-    <circle cx="${x - 30}" cy="${y + 50}" r="40" fill="#7ed47b" />
-    <circle cx="${x + 30}" cy="${y + 50}" r="40" fill="#5bb558" />
+    <path d="M ${x-6} 280 Q ${x-14} ${y+80} ${x-2} ${y+20} Q ${x+10} ${y+50} ${x+4} 280 Z"
+          fill="#1ec4a3" stroke="#061226" stroke-width="2" stroke-linejoin="round" />
+    <ellipse cx="${x-20}" cy="${y+80}" rx="14" ry="6" fill="#168e76" stroke="#061226" stroke-width="1.5" transform="rotate(-30 ${x-20} ${y+80})" />
+    <ellipse cx="${x+20}" cy="${y+50}" rx="16" ry="7" fill="#168e76" stroke="#061226" stroke-width="1.5" transform="rotate(20 ${x+20} ${y+50})" />
+    <ellipse cx="${x-22}" cy="${y+20}" rx="12" ry="5" fill="#26d8b6" stroke="#061226" stroke-width="1.5" transform="rotate(-20 ${x-22} ${y+20})" />
+    <ellipse cx="${x+22}" cy="${y-10}" rx="14" ry="6" fill="#26d8b6" stroke="#061226" stroke-width="1.5" transform="rotate(15 ${x+22} ${y-10})" />
+    <ellipse cx="${x}" cy="${y-30}" rx="22" ry="10" fill="#26d8b6" stroke="#061226" stroke-width="2" />
   `;
   svg.appendChild(g);
   return g;
 }
 
-function log(svg, x = 200, y = 220) {
+// "log" → sunken treasure chest.
+function log(svg, x = 200, y = 240) {
   const g = document.createElementNS(SVG_NS, 'g');
   g.dataset.label = 'log';
   g.innerHTML = `
-    <ellipse cx="${x}" cy="${y}" rx="80" ry="14" fill="#8b5a2b" />
-    <ellipse cx="${x - 78}" cy="${y}" rx="6" ry="14" fill="#5e3a1a" />
-    <ellipse cx="${x + 78}" cy="${y}" rx="6" ry="14" fill="#5e3a1a" />
-    <line x1="${x - 60}" y1="${y - 8}" x2="${x + 60}" y2="${y - 8}" stroke="#5e3a1a" stroke-width="2" />
+    <ellipse cx="${x}" cy="${y+12}" rx="90" ry="10" fill="#000" opacity="0.25" />
+    <path d="M ${x-78} ${y-14} Q ${x-78} ${y-40} ${x} ${y-42} Q ${x+78} ${y-40} ${x+78} ${y-14} Z"
+          fill="#995a2e" stroke="#061226" stroke-width="2.5" stroke-linejoin="round" />
+    <rect x="${x-78}" y="${y-14}" width="156" height="34" rx="4" fill="#7a4a2a" stroke="#061226" stroke-width="2.5" />
+    <rect x="${x-78}" y="${y-14}" width="156" height="34" rx="4" fill="url(#g-shade)" opacity="0.4" />
+    <rect x="${x-78}" y="${y-2}" width="156" height="4" fill="#404040" />
+    <rect x="${x-3}"  y="${y-14}" width="6" height="34" fill="#404040" />
+    <circle cx="${x}" cy="${y+3}" r="3" fill="#ffd23f" stroke="#061226" stroke-width="1.5" />
   `;
   svg.appendChild(g);
   return g;
 }
 
-function ball(svg, x, y, color = '#ff5d5d') {
+// "ball" → glowing pearl orb.
+function ball(svg, x, y, color = '#ffd23f') {
   const g = document.createElementNS(SVG_NS, 'g');
   g.dataset.label = 'ball';
   g.innerHTML = `
-    <circle cx="${x}" cy="${y}" r="22" fill="${color}" />
-    <path d="M ${x - 22} ${y} Q ${x} ${y - 8} ${x + 22} ${y}" stroke="#ffffff" stroke-width="2" fill="none" />
-    <path d="M ${x - 22} ${y} Q ${x} ${y + 8} ${x + 22} ${y}" stroke="#ffffff" stroke-width="2" fill="none" />
+    <circle cx="${x}" cy="${y+4}" r="22" fill="#000" opacity="0.25" />
+    <circle cx="${x}" cy="${y}"   r="22" fill="${color}" stroke="#061226" stroke-width="2" />
+    <circle cx="${x-7}" cy="${y-7}" r="6" fill="#ffffff" opacity="0.7" />
+    <g stroke="${color}" stroke-width="2" stroke-linecap="round" opacity="0.6">
+      <line x1="${x}" y1="${y-30}" x2="${x}" y2="${y-26}" />
+      <line x1="${x}" y1="${y+30}" x2="${x}" y2="${y+26}" />
+      <line x1="${x-30}" y1="${y}" x2="${x-26}" y2="${y}" />
+      <line x1="${x+30}" y1="${y}" x2="${x+26}" y2="${y}" />
+    </g>
   `;
   svg.appendChild(g);
   return g;
 }
 
+// "sun-up" → light shaft from the surface with a smiling face.
 function bigSun(svg) {
   const g = document.createElementNS(SVG_NS, 'g');
   g.dataset.label = 'sun';
   g.innerHTML = `
-    <circle cx="200" cy="120" r="70" fill="#ffd166" />
-    <g stroke="#f5b842" stroke-width="6" stroke-linecap="round">
-      <line x1="200" y1="20"  x2="200" y2="40"  />
-      <line x1="200" y1="200" x2="200" y2="220" />
-      <line x1="100" y1="120" x2="120" y2="120" />
-      <line x1="280" y1="120" x2="300" y2="120" />
-      <line x1="130" y1="50"  x2="145" y2="65"  />
-      <line x1="270" y1="50"  x2="255" y2="65"  />
-      <line x1="130" y1="190" x2="145" y2="175" />
-      <line x1="270" y1="190" x2="255" y2="175" />
-    </g>
-    <circle cx="180" cy="115" r="6" fill="#222" />
-    <circle cx="220" cy="115" r="6" fill="#222" />
-    <path d="M 180 135 Q 200 150 220 135" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round" />
+    <ellipse cx="200" cy="40" rx="120" ry="22" fill="#ffd23f" opacity="0.4" />
+    <ellipse cx="200" cy="40" rx="80"  ry="14" fill="#fff8e0" opacity="0.85" />
+    <path d="M 130 40 L 270 40 L 320 280 L 80 280 Z" fill="#ffd23f" opacity="0.18" />
+    <path d="M 160 40 L 240 40 L 270 280 L 130 280 Z" fill="#ffffff" opacity="0.22" />
+    <circle cx="200" cy="120" r="38" fill="#ffd23f" stroke="#a07b00" stroke-width="2" />
+    <circle cx="186" cy="116" r="3.5" fill="#061226" />
+    <circle cx="214" cy="116" r="3.5" fill="#061226" />
+    <path d="M 184 132 Q 200 144 216 132" stroke="#061226" stroke-width="2.5" fill="none" stroke-linecap="round" />
   `;
   svg.appendChild(g);
 }
@@ -125,7 +162,7 @@ const BUILDERS = {
   },
   'play-ball': () => {
     const s = frame();
-    ball(s, 200, 230, '#ffd166');
+    ball(s, 200, 230, '#ffd23f');
     place(s, buildKoala({ size: 'chibi' }), { x: 60, y: 90, w: 110 });
     place(s, buildPanda({ size: 'chibi' }), { x: 230, y: 90, w: 110 });
     return s;
@@ -174,7 +211,7 @@ const BUILDERS = {
   },
   'panda-with-ball': () => {
     const s = frame();
-    ball(s, 90, 230, '#ffd166');
+    ball(s, 90, 230, '#ffd23f');
     place(s, buildPanda({ size: 'medium' }), { x: 140, y: 50, w: 180 });
     return s;
   },

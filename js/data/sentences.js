@@ -22,37 +22,41 @@
 // rewrite intentionally avoids adding scene art so the visual budget
 // stays focused on the world map.
 
+// Sea-hero corpus: each sceneId still resolves to an art builder
+// that renders Shark Hero / Octopus Hero in an underwater scene. The
+// sentence text uses the new sea-themed vocabulary so the words a
+// 7-year-old reads match the world they're seeing.
 export const SENTENCES = [
   // ---------- L1: 3-4 tokens ----------
   { text: 'The sun is up.',                 sceneId: 'sun-up' },
-  { text: 'I see a panda.',                 sceneId: 'little-panda' },
-  { text: 'I see a koala.',                 sceneId: 'little-koala' },
-  { text: 'The koala can run.',             sceneId: 'koala-running' },
-  { text: 'Two pandas play.',               sceneId: 'pandas-in-grass' },
-  { text: 'A koala can jump.',              sceneId: 'koala-jumping' },
-  { text: 'The panda can eat.',             sceneId: 'panda-eats-bamboo' },
+  { text: 'I see a shark.',                 sceneId: 'little-koala' },
+  { text: 'I see an octopus.',              sceneId: 'little-panda' },
+  { text: 'The shark can run.',             sceneId: 'koala-running' },
+  { text: 'Two octopuses play.',            sceneId: 'pandas-in-grass' },
+  { text: 'A shark can jump.',              sceneId: 'koala-jumping' },
+  { text: 'The octopus can eat.',           sceneId: 'panda-eats-bamboo' },
   { text: 'Look at the sun.',               sceneId: 'sun-up' },
-  { text: 'The koala is up.',               sceneId: 'koala-in-tree' },
+  { text: 'The shark is up.',               sceneId: 'koala-in-tree' },
 
   // ---------- L2: 5-6 tokens ----------
-  { text: 'The koala has a red hat.',       sceneId: 'koala-with-hat' },
-  { text: 'Look at the brown koala.',       sceneId: 'brown-koala' },
-  { text: 'The koala is on a log.',         sceneId: 'koala-on-log' },
-  { text: 'I see three little koalas.',     sceneId: 'three-koalas' },
-  { text: 'The panda has a yellow ball.',   sceneId: 'panda-with-ball' },
-  { text: 'A koala is in the tree.',        sceneId: 'koala-in-tree' },
-  { text: 'Look at the funny panda.',       sceneId: 'funny-panda' },
-  { text: 'A koala is under the tree.',     sceneId: 'koala-under-tree' },
-  { text: 'I like the little panda.',       sceneId: 'little-panda' },
+  { text: 'The shark has a red mask.',      sceneId: 'koala-with-hat' },
+  { text: 'Look at the brown shark.',       sceneId: 'brown-koala' },
+  { text: 'The shark is on a chest.',       sceneId: 'koala-on-log' },
+  { text: 'I see three little sharks.',     sceneId: 'three-koalas' },
+  { text: 'The octopus has a yellow pearl.', sceneId: 'panda-with-ball' },
+  { text: 'A shark is in the kelp.',        sceneId: 'koala-in-tree' },
+  { text: 'Look at the funny octopus.',     sceneId: 'funny-panda' },
+  { text: 'A shark is under the kelp.',     sceneId: 'koala-under-tree' },
+  { text: 'I like the little octopus.',     sceneId: 'little-panda' },
 
   // ---------- L3: 7-8 tokens ----------
-  { text: 'I like to see the panda eat.',   sceneId: 'panda-eats-bamboo' },
-  { text: 'Two little pandas play in the grass.', sceneId: 'pandas-in-grass' },
-  { text: 'Look at the three funny little koalas.', sceneId: 'three-koalas' },
-  { text: 'A koala can jump up the tree.',  sceneId: 'koala-jumping' },
-  { text: 'We can play with a yellow ball.', sceneId: 'play-ball' },
-  { text: 'I see a funny panda eat bamboo.', sceneId: 'panda-eats-bamboo' },
-  { text: 'The little koala is on a log.',  sceneId: 'koala-on-log' },
+  { text: 'I like to see the octopus eat.', sceneId: 'panda-eats-bamboo' },
+  { text: 'Two little octopuses play in the sea.', sceneId: 'pandas-in-grass' },
+  { text: 'Look at the three funny little sharks.', sceneId: 'three-koalas' },
+  { text: 'A shark can jump up the chest.', sceneId: 'koala-jumping' },
+  { text: 'We can play with a yellow pearl.', sceneId: 'play-ball' },
+  { text: 'I see a funny octopus eat bamboo.', sceneId: 'panda-eats-bamboo' },
+  { text: 'The little shark is on a chest.', sceneId: 'koala-on-log' },
 ];
 
 // Split a sentence text into ordered word tokens, stripping the period.

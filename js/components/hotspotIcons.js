@@ -1,11 +1,20 @@
-// Illustrated hotspot icons (Polish iteration 2). Each builder returns
-// an SVG <g> element designed to sit inside a 128×128 user-unit box
-// centered on (0, 0). They replace the flat emoji glyphs the world-map
-// hub used to render — turning each "place" into a tiny illustrated
-// scene that reads as part of the world rather than a generic icon.
+// Underwater Hero hotspot icons (Sea-Hero reskin).
 //
-// The drawings are intentionally chunky and crayon-bright so they read
-// well at the size the bubble allows on a phone (~60–80px square).
+// Each builder returns an SVG <g> element designed to sit inside a
+// 128×128 user-unit box centered on (0, 0). They replace the previous
+// crayon-forest icons with sea-themed equivalents that fit the new
+// 7-year-old superhero adventure tone.
+//
+//   library     → ancient seaweed library scroll-tower
+//   phonics     → glowing sound conch shell
+//   cloze       → thinking sea-bubble
+//   wordPicture → coral reef twins
+//   buildSentence → torpedo letter-block sub
+//   stickerBook → pearl + starfish bouquet
+//   closet      → hero-gear treasure chest
+//
+// The drawings are intentionally chunky and contrast-heavy so they
+// read at the bubble's typical 60-80px on phones.
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -17,176 +26,201 @@ function group(attrs = {}) {
   return g;
 }
 
-// Each builder writes its inner SVG via innerHTML for compactness — the
-// markup is inert content, no runtime templating, and the existing
-// character builders use the same pattern.
-
-function libraryTreehouse() {
-  const g = group({ class: 'hot-icon hot-treehouse' });
+// Books → an underwater scroll-tower with a beam of light and a fish.
+function libraryTower() {
+  const g = group({ class: 'hot-icon hot-tower' });
   g.innerHTML = `
-    <!-- canopy: 3 overlapping leafy clouds -->
-    <ellipse cx="-18" cy="-22" rx="22" ry="18" fill="#3f8b3a" />
-    <ellipse cx="14"  cy="-28" rx="24" ry="20" fill="#4ea14a" />
-    <ellipse cx="0"   cy="-12" rx="30" ry="20" fill="#54c45e" />
-    <ellipse cx="-10" cy="-22" rx="10" ry="6"  fill="#8be094" opacity="0.6" />
-    <!-- trunk -->
-    <rect x="-7" y="-2" width="14" height="32" rx="3" fill="#7a4a2a" />
-    <rect x="-7" y="-2" width="14" height="32" rx="3" fill="url(#g-shade)" />
-    <!-- tiny door -->
-    <rect x="-5" y="6" width="10" height="14" rx="3" fill="#3a2515" />
-    <circle cx="3" cy="14" r="1" fill="#ffd23f" />
-    <!-- a book on a branch -->
-    <rect x="10" y="-4" width="12" height="9" rx="1" fill="#ef3e3e" />
-    <rect x="10" y="-4" width="12" height="2" fill="#a52323" />
-  `;
-  return g;
-}
-
-function phonicsCave() {
-  const g = group({ class: 'hot-icon hot-cave' });
-  g.innerHTML = `
-    <!-- ground shadow -->
-    <ellipse cx="0" cy="28" rx="34" ry="6" fill="rgba(0,0,0,0.18)" />
-    <!-- cave arch -->
-    <path d="M -32 28 L -32 0 Q -32 -28 0 -28 Q 32 -28 32 0 L 32 28 Z" fill="#1a3a5e" />
-    <path d="M -26 26 L -26 2  Q -26 -22 0 -22 Q 26 -22 26 2  L 26 26 Z" fill="#0d2238" />
-    <!-- glowing letters spilling out -->
-    <text x="-12" y="14" font-family="'Bubblegum Sans', sans-serif" font-size="20" font-weight="700" fill="#ffd23f">A</text>
-    <text x="2"   y="20" font-family="'Bubblegum Sans', sans-serif" font-size="16" font-weight="700" fill="#ff8a3d">B</text>
-    <text x="14"  y="14" font-family="'Bubblegum Sans', sans-serif" font-size="18" font-weight="700" fill="#54c45e">C</text>
-    <!-- two stalactites -->
-    <path d="M -18 -22 L -14 -10 L -22 -10 Z" fill="#2a4a6e" />
-    <path d="M  16 -22 L  20 -10 L  12 -10 Z" fill="#2a4a6e" />
-  `;
-  return g;
-}
-
-function clozePond() {
-  const g = group({ class: 'hot-icon hot-pond' });
-  g.innerHTML = `
-    <!-- water -->
-    <ellipse cx="0" cy="14" rx="38" ry="14" fill="#2378c8" />
-    <ellipse cx="0" cy="14" rx="38" ry="14" fill="url(#g-shade)" opacity="0.6" />
-    <ellipse cx="-8" cy="10" rx="14" ry="3" fill="#7fc6ff" opacity="0.7" />
-    <!-- two lily pads -->
-    <path d="M -20 12 a 10 5 0 1 0 20 0 a 10 5 0 1 0 -20 0 Z M -10 12 L -10 7 Z" fill="#4ea14a" />
-    <ellipse cx="14" cy="14" rx="9" ry="4" fill="#54c45e" />
-    <!-- thought bubble rising -->
-    <circle cx="-6" cy="-4"  r="4" fill="#fff" stroke="#1a1a1a" stroke-width="1.5" />
-    <circle cx="2"  cy="-12" r="6" fill="#fff" stroke="#1a1a1a" stroke-width="1.5" />
-    <circle cx="14" cy="-22" r="9" fill="#fff" stroke="#1a1a1a" stroke-width="2" />
-    <text x="14" y="-19" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="14" font-weight="700" fill="#a672ff">?</text>
-  `;
-  return g;
-}
-
-function matchMeadow() {
-  const g = group({ class: 'hot-icon hot-meadow' });
-  g.innerHTML = `
-    <!-- meadow mound -->
-    <ellipse cx="0" cy="22" rx="38" ry="10" fill="#3f8b3a" />
-    <ellipse cx="0" cy="20" rx="36" ry="8"  fill="#54c45e" />
-    <!-- easel with picture -->
-    <line x1="-8" y1="20" x2="-14" y2="-6" stroke="#7a4a2a" stroke-width="3" stroke-linecap="round" />
-    <line x1="8"  y1="20" x2="14"  y2="-6" stroke="#7a4a2a" stroke-width="3" stroke-linecap="round" />
-    <line x1="-12" y1="6" x2="12"  y2="6"  stroke="#7a4a2a" stroke-width="2" />
-    <rect x="-12" y="-18" width="24" height="20" rx="2" fill="#fff8e7" stroke="#1a1a1a" stroke-width="1.5" />
-    <!-- abstract picture content -->
-    <rect x="-10" y="-15" width="20" height="6" fill="#3aa6ff" />
-    <circle cx="-3" cy="-4" r="2" fill="#ffd23f" />
-    <!-- flowers around -->
-    <circle cx="-26" cy="14" r="3" fill="#ef3e3e" /><circle cx="-26" cy="14" r="1" fill="#ffd23f" />
-    <circle cx="26"  cy="14" r="3" fill="#a672ff" /><circle cx="26"  cy="14" r="1" fill="#ffd23f" />
-  `;
-  return g;
-}
-
-function sentenceWorkshop() {
-  const g = group({ class: 'hot-icon hot-workshop' });
-  g.innerHTML = `
-    <!-- back wall plank -->
-    <rect x="-32" y="-22" width="64" height="44" rx="4" fill="#a05a3a" />
-    <rect x="-32" y="-22" width="64" height="44" rx="4" fill="url(#g-shade)" opacity="0.55" />
-    <!-- letter blocks -->
-    <rect x="-22" y="-2" width="16" height="16" rx="2" fill="#ef3e3e" stroke="#1a1a1a" stroke-width="1.5" />
-    <rect x="-4"  y="-2" width="16" height="16" rx="2" fill="#3aa6ff" stroke="#1a1a1a" stroke-width="1.5" />
-    <rect x="14"  y="-2" width="16" height="16" rx="2" fill="#ffd23f" stroke="#1a1a1a" stroke-width="1.5" />
-    <!-- block letters -->
-    <text x="-14" y="11" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="16" font-weight="700" fill="#fff">C</text>
-    <text x="4"   y="11" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="16" font-weight="700" fill="#fff">A</text>
-    <text x="22"  y="11" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="16" font-weight="700" fill="#1a1a1a">T</text>
-    <!-- topper block -->
-    <rect x="-4" y="-22" width="16" height="16" rx="2" fill="#54c45e" stroke="#1a1a1a" stroke-width="1.5" />
-    <text x="4"  y="-9" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="16" font-weight="700" fill="#fff">!</text>
-  `;
-  return g;
-}
-
-function stickerGarden() {
-  const g = group({ class: 'hot-icon hot-stickers' });
-  g.innerHTML = `
-    <!-- bouquet stems -->
-    <path d="M -6 24 Q -10 4 -16 -10" stroke="#3f8b3a" stroke-width="2.5" fill="none" stroke-linecap="round" />
-    <path d="M  0 26 Q  0 6  0 -16"   stroke="#3f8b3a" stroke-width="2.5" fill="none" stroke-linecap="round" />
-    <path d="M  6 24 Q 10 4 16 -10"   stroke="#3f8b3a" stroke-width="2.5" fill="none" stroke-linecap="round" />
-    <!-- flowers — 5-petal stars -->
-    ${flower(-16, -14, '#ef3e3e')}
-    ${flower(  0, -22, '#a672ff')}
-    ${flower( 16, -14, '#3aa6ff')}
-    <!-- a star sticker peeking in -->
-    <path d="M -22 8 l 4 8 l 8 1 l -6 6 l 2 9 l -8 -5 l -8 5 l 2 -9 l -6 -6 l 8 -1 z" fill="#ffd23f" stroke="#a07b00" stroke-width="1" transform="scale(0.7) translate(-4 6)" />
-    <!-- ribbon at the base -->
-    <path d="M -10 22 Q 0 30 10 22 Q 6 26 0 26 Q -6 26 -10 22 Z" fill="#ff77b1" />
-  `;
-  return g;
-}
-function flower(x, y, color) {
-  return `
-    <g transform="translate(${x} ${y})">
-      <circle cx="0" cy="-6" r="5" fill="${color}" />
-      <circle cx="6" cy="-2" r="5" fill="${color}" />
-      <circle cx="-6" cy="-2" r="5" fill="${color}" />
-      <circle cx="3" cy="6" r="5" fill="${color}" />
-      <circle cx="-3" cy="6" r="5" fill="${color}" />
-      <circle cx="0" cy="0" r="3" fill="#ffd23f" />
+    <!-- light beam from above -->
+    <path d="M -8 -34 L 8 -34 L 18 28 L -18 28 Z" fill="#ffd23f" opacity="0.35" />
+    <!-- tower stack of "scroll books" -->
+    <rect x="-22" y="6"  width="44" height="10" rx="2" fill="#1ea0ff" stroke="#061226" stroke-width="2" />
+    <rect x="-22" y="6"  width="44" height="3"  fill="#0a78bf" />
+    <rect x="-20" y="-6" width="40" height="12" rx="2" fill="#ef2c4a" stroke="#061226" stroke-width="2" />
+    <rect x="-20" y="-6" width="40" height="3"  fill="#a51a30" />
+    <rect x="-18" y="-22" width="36" height="16" rx="2" fill="#ffd23f" stroke="#061226" stroke-width="2" />
+    <rect x="-18" y="-22" width="36" height="3"  fill="#a07b00" />
+    <text x="0" y="-10" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="14" font-weight="800" fill="#061226">A B</text>
+    <!-- bottom kelp blade peeking up -->
+    <path d="M -28 28 q 4 -10 -2 -22" stroke="#1ec4a3" stroke-width="3" fill="none" stroke-linecap="round" />
+    <!-- tiny fish swimming by -->
+    <g transform="translate(22 -20)">
+      <ellipse cx="0" cy="0" rx="6" ry="3" fill="#ff7a1a" />
+      <path d="M 6 0 l 4 -3 l 0 6 z" fill="#ff7a1a" />
+      <circle cx="-2" cy="-1" r="0.8" fill="#061226" />
     </g>
   `;
+  return g;
 }
 
-function closetWardrobe() {
-  const g = group({ class: 'hot-icon hot-closet' });
+// Sounds → a glowing conch shell with letters spilling out.
+function phonicsConch() {
+  const g = group({ class: 'hot-icon hot-conch' });
   g.innerHTML = `
-    <!-- wardrobe body -->
-    <rect x="-26" y="-30" width="52" height="58" rx="3" fill="#7a4a2a" stroke="#1a1a1a" stroke-width="2" />
-    <rect x="-26" y="-30" width="52" height="58" rx="3" fill="url(#g-shade)" opacity="0.4" />
-    <!-- two doors -->
-    <rect x="-24" y="-28" width="22" height="54" rx="2" fill="#a05a3a" stroke="#1a1a1a" stroke-width="1.5" />
-    <rect x="2"   y="-28" width="22" height="54" rx="2" fill="#a05a3a" stroke="#1a1a1a" stroke-width="1.5" />
-    <!-- knobs -->
-    <circle cx="-6" cy="0" r="2" fill="#ffd23f" />
-    <circle cx="6"  cy="0" r="2" fill="#ffd23f" />
-    <!-- bow on top -->
-    <circle cx="0" cy="-30" r="4" fill="#ef3e3e" />
-    <path d="M -10 -30 L 0 -30 L -4 -38 Z" fill="#ef3e3e" />
-    <path d="M 10 -30 L 0 -30 L 4 -38 Z" fill="#ef3e3e" />
-    <!-- legs -->
-    <rect x="-22" y="28" width="6" height="4" fill="#1a1a1a" />
-    <rect x="16"  y="28" width="6" height="4" fill="#1a1a1a" />
+    <!-- glow halo behind shell -->
+    <ellipse cx="0" cy="6" rx="32" ry="22" fill="#ffd23f" opacity="0.25" />
+    <!-- conch body -->
+    <path d="M -28 14 Q -32 -14 -2 -22 Q 30 -16 28 14 Q 0 26 -28 14 Z"
+          fill="#ffd9b5" stroke="#061226" stroke-width="2.5" stroke-linejoin="round" />
+    <!-- spiral lines -->
+    <path d="M -24 12 Q -10 -16 22 -8" stroke="#c4885c" stroke-width="2" fill="none" />
+    <path d="M -16 14 Q -2 -8 18 0"   stroke="#c4885c" stroke-width="1.5" fill="none" />
+    <path d="M -8 14 Q 4 0 14 6"      stroke="#c4885c" stroke-width="1" fill="none" />
+    <!-- inner mouth -->
+    <ellipse cx="-14" cy="6" rx="6" ry="10" fill="#ef5d8a" stroke="#061226" stroke-width="2" />
+    <!-- letters floating out -->
+    <text x="-22" y="-26" font-family="'Bubblegum Sans', sans-serif" font-size="14" font-weight="800" fill="#ffd23f" stroke="#061226" stroke-width="0.5">A</text>
+    <text x="-4"  y="-30" font-family="'Bubblegum Sans', sans-serif" font-size="12" font-weight="800" fill="#1ec4a3" stroke="#061226" stroke-width="0.5">B</text>
+    <text x="14"  y="-26" font-family="'Bubblegum Sans', sans-serif" font-size="13" font-weight="800" fill="#ff5ca6" stroke="#061226" stroke-width="0.5">C</text>
   `;
   return g;
 }
 
-const REGISTRY = {
-  library:       libraryTreehouse,
-  phonics:       phonicsCave,
-  cloze:         clozePond,
-  wordPicture:   matchMeadow,
-  buildSentence: sentenceWorkshop,
-  stickerBook:   stickerGarden,
-  closet:        closetWardrobe,
+// Fill In → a thought bubble inside a sea-bubble cluster.
+function clozeBubble() {
+  const g = group({ class: 'hot-icon hot-bubble' });
+  g.innerHTML = `
+    <!-- sea floor pebbles -->
+    <ellipse cx="0" cy="26" rx="34" ry="6" fill="#0a325f" />
+    <!-- big thought bubble with question mark -->
+    <circle cx="0" cy="-8" r="22" fill="#c8efff" stroke="#061226" stroke-width="2.5" />
+    <circle cx="0" cy="-8" r="22" fill="url(#g-shade)" opacity="0.4" />
+    <ellipse cx="-8" cy="-16" rx="6" ry="3" fill="#ffffff" opacity="0.7" />
+    <text x="0" y="-2" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="28" font-weight="800" fill="#6a40d8">?</text>
+    <!-- trailing smaller bubbles -->
+    <circle cx="-22" cy="20"  r="6" fill="#c8efff" stroke="#061226" stroke-width="1.5" />
+    <circle cx="-12" cy="14"  r="4" fill="#c8efff" stroke="#061226" stroke-width="1.5" />
+    <circle cx="-4"  cy="10"  r="2.5" fill="#c8efff" stroke="#061226" stroke-width="1" />
+  `;
+  return g;
+}
+
+// Match → twin coral reef arches with a fish darting through.
+function matchReef() {
+  const g = group({ class: 'hot-icon hot-reef' });
+  g.innerHTML = `
+    <!-- sand floor -->
+    <ellipse cx="0" cy="26" rx="36" ry="6" fill="#e0c089" />
+    <!-- left coral pillar -->
+    <path d="M -22 26 Q -24 6 -28 -10 Q -22 -8 -18 -2 Q -22 6 -16 12 Q -20 22 -22 26 Z"
+          fill="#ff5ca6" stroke="#061226" stroke-width="2" stroke-linejoin="round" />
+    <circle cx="-26" cy="-2" r="3" fill="#ff7a1a" stroke="#061226" stroke-width="1" />
+    <!-- right coral pillar -->
+    <path d="M 22 26 Q 24 6 28 -10 Q 22 -8 18 -2 Q 22 6 16 12 Q 20 22 22 26 Z"
+          fill="#ffd23f" stroke="#061226" stroke-width="2" stroke-linejoin="round" />
+    <circle cx="26" cy="0" r="3" fill="#ff5ca6" stroke="#061226" stroke-width="1" />
+    <!-- center fish -->
+    <g transform="translate(0 4)">
+      <ellipse cx="0" cy="0" rx="12" ry="6" fill="#1ea0ff" stroke="#061226" stroke-width="1.5" />
+      <path d="M 12 0 l 8 -6 l 0 12 z" fill="#1ea0ff" stroke="#061226" stroke-width="1.5" stroke-linejoin="round" />
+      <circle cx="-6" cy="-2" r="1.5" fill="#061226" />
+      <path d="M -8 0 q 8 4 16 0" stroke="#0a78bf" stroke-width="1" fill="none" />
+    </g>
+  `;
+  return g;
+}
+
+// Build → a torpedo / sub with letter blocks loaded inside.
+function sentenceSub() {
+  const g = group({ class: 'hot-icon hot-sub' });
+  g.innerHTML = `
+    <!-- sub body -->
+    <ellipse cx="0" cy="0" rx="36" ry="18" fill="#ef2c4a" stroke="#061226" stroke-width="2.5" />
+    <ellipse cx="0" cy="0" rx="36" ry="18" fill="url(#g-shade)" opacity="0.45" />
+    <ellipse cx="-12" cy="-6" rx="14" ry="6" fill="#ffffff" opacity="0.35" />
+    <!-- propeller -->
+    <line x1="-36" y1="-8" x2="-44" y2="-12" stroke="#061226" stroke-width="2" stroke-linecap="round" />
+    <line x1="-36" y1="8"  x2="-44" y2="12"  stroke="#061226" stroke-width="2" stroke-linecap="round" />
+    <circle cx="-36" cy="0" r="3" fill="#ffd23f" stroke="#061226" stroke-width="1.5" />
+    <!-- conning tower -->
+    <rect x="-6" y="-26" width="14" height="10" rx="2" fill="#ef2c4a" stroke="#061226" stroke-width="2" />
+    <rect x="-2" y="-32" width="3" height="8" fill="#061226" />
+    <circle cx="-1" cy="-32" r="2" fill="#ffd23f" stroke="#061226" stroke-width="1" />
+    <!-- portholes (letters) -->
+    <circle cx="-16" cy="0" r="6" fill="#c8efff" stroke="#061226" stroke-width="1.5" />
+    <text x="-16" y="3" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="9" font-weight="800" fill="#061226">A</text>
+    <circle cx="0"   cy="0" r="6" fill="#c8efff" stroke="#061226" stroke-width="1.5" />
+    <text x="0" y="3" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="9" font-weight="800" fill="#061226">B</text>
+    <circle cx="16"  cy="0" r="6" fill="#c8efff" stroke="#061226" stroke-width="1.5" />
+    <text x="16" y="3" text-anchor="middle" font-family="'Bubblegum Sans', sans-serif" font-size="9" font-weight="800" fill="#061226">C</text>
+    <!-- tail bubbles -->
+    <circle cx="-44" cy="-2" r="2" fill="#c8efff" stroke="#061226" stroke-width="0.8" />
+    <circle cx="-50" cy="4"  r="1.5" fill="#c8efff" stroke="#061226" stroke-width="0.6" />
+  `;
+  return g;
+}
+
+// Stickers → a pearl in an open clam with starfish accents.
+function stickersPearl() {
+  const g = group({ class: 'hot-icon hot-stickers' });
+  g.innerHTML = `
+    <!-- light burst -->
+    <g stroke="#ffd23f" stroke-width="2.5" stroke-linecap="round" opacity="0.7">
+      <line x1="0" y1="-30" x2="0" y2="-22" />
+      <line x1="0" y1="22"  x2="0" y2="30" />
+      <line x1="-30" y1="0" x2="-22" y2="0" />
+      <line x1="22"  y1="0" x2="30"  y2="0" />
+      <line x1="-22" y1="-22" x2="-16" y2="-16" />
+      <line x1="22"  y1="-22" x2="16"  y2="-16" />
+    </g>
+    <!-- bottom shell half -->
+    <path d="M -28 4 Q -28 24 0 26 Q 28 24 28 4 Q 0 0 -28 4 Z"
+          fill="#ff5ca6" stroke="#061226" stroke-width="2.5" stroke-linejoin="round" />
+    <path d="M -22 8 q 0 -2 4 -2 M -10 10 q 0 -2 4 -2 M 6 10 q 0 -2 4 -2 M 18 8 q 0 -2 4 -2"
+          stroke="#a93a73" stroke-width="1.5" fill="none" />
+    <!-- top shell half (open above) -->
+    <path d="M -26 4 Q -22 -16 0 -18 Q 22 -16 26 4 Q 0 8 -26 4 Z"
+          fill="#ff7a9b" stroke="#061226" stroke-width="2.5" stroke-linejoin="round" />
+    <!-- the pearl -->
+    <circle cx="0" cy="2" r="9" fill="#fff8e0" stroke="#061226" stroke-width="2" />
+    <circle cx="-3" cy="-1" r="3" fill="#ffffff" opacity="0.85" />
+    <!-- starfish accent peeking in -->
+    <g transform="translate(-26 18) scale(0.55)">
+      <path d="M 0 -10 L 3 -3 L 10 -2 L 5 3 L 6 10 L 0 6 L -6 10 L -5 3 L -10 -2 L -3 -3 Z"
+            fill="#ff7a1a" stroke="#061226" stroke-width="2" stroke-linejoin="round" />
+    </g>
+  `;
+  return g;
+}
+
+// Closet → a treasure chest brimming with hero gear.
+function closetChest() {
+  const g = group({ class: 'hot-icon hot-chest' });
+  g.innerHTML = `
+    <!-- chest body -->
+    <rect x="-28" y="-2" width="56" height="22" rx="2" fill="#7a4a2a" stroke="#061226" stroke-width="2.5" />
+    <rect x="-28" y="-2" width="56" height="22" rx="2" fill="url(#g-shade)" opacity="0.45" />
+    <!-- iron bands -->
+    <rect x="-28" y="6" width="56" height="3" fill="#404040" />
+    <rect x="-3"  y="-2" width="6"  height="22" fill="#404040" />
+    <!-- lid (open, behind) -->
+    <path d="M -28 -2 Q -28 -22 0 -24 Q 28 -22 28 -2 Z"
+          fill="#995a2e" stroke="#061226" stroke-width="2.5" stroke-linejoin="round" />
+    <path d="M -26 -3 Q -26 -20 0 -22 Q 26 -20 26 -3 Z" fill="url(#g-shade)" opacity="0.55" />
+    <!-- gold spilling out: coins + a gem -->
+    <circle cx="-12" cy="-4" r="4" fill="#ffd23f" stroke="#061226" stroke-width="1.5" />
+    <circle cx="-2"  cy="-6" r="4" fill="#ffd23f" stroke="#061226" stroke-width="1.5" />
+    <circle cx="10"  cy="-4" r="4" fill="#ffd23f" stroke="#061226" stroke-width="1.5" />
+    <path d="M 16 -10 L 22 -6 L 18 0 L 14 0 L 10 -6 Z"
+          fill="#ef2c4a" stroke="#061226" stroke-width="1.5" stroke-linejoin="round" />
+    <!-- mask peeking out (hero gear) -->
+    <path d="M -22 -8 Q -18 -14 -10 -14 L -8 -14 Q -4 -8 -10 -4 Q -18 -4 -22 -8 Z"
+          fill="#061226" />
+    <ellipse cx="-16" cy="-9" rx="3" ry="2" fill="#ffd23f" />
+  `;
+  return g;
+}
+
+const ICON_BY_ID = {
+  library:       libraryTower,
+  phonics:       phonicsConch,
+  cloze:         clozeBubble,
+  wordPicture:   matchReef,
+  buildSentence: sentenceSub,
+  stickerBook:   stickersPearl,
+  closet:        closetChest,
 };
 
 export function buildHotspotIcon(id) {
-  const fn = REGISTRY[id];
+  const fn = ICON_BY_ID[id];
   return fn ? fn() : null;
 }

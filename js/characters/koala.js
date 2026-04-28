@@ -1,21 +1,37 @@
-// Layered SVG koala factory.
+// Shark Hero (formerly the koala builder).
+//
+// Sea-hero reskin — for backward compatibility with tests, scene art,
+// and persisted buddy state, the file/function/species id stays
+// "koala". Visually it now renders a streamlined shark hero with a
+// dorsal fin headpiece, side pectoral fins (animated as arms), tail
+// flukes (animated as legs), and a heroic underbelly highlight. The
+// painterly gradient overlays from svgFilters.js (g-highlight + g-shade)
+// give it a 3D-ish shaded look.
+//
+// The animator targets these classes for blink / look-at-cursor / wave
+// / cheer / talk-sync, so the ear/arm/leg/eye/mouth IDs are preserved
+// as anchor points even though they correspond to fins on a shark.
+//
 // Returns an <svg> element whose direct children are named groups
 // (#body, #head, #left-ear, #right-ear, #left-eye, #right-eye,
-//  #left-eyelid, #right-eyelid, #left-cheek, #right-cheek, #nose, #mouth,
-//  #left-arm, #right-arm, #left-leg, #right-leg, #belly).
-// The animator (characters/animator.js) targets these groups by class so
-// every part can animate independently.
+//  #left-eyelid, #right-eyelid, #left-cheek, #right-cheek, #nose,
+//  #mouth, #left-arm, #right-arm, #left-leg, #right-leg, #belly).
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
-const FUR_TONES = {
-  classic: { fur: '#b9b9c4', shade: '#9a9aa8' },
-  warm:    { fur: '#c9beb6', shade: '#a89c92' },
-  blue:    { fur: '#bfd6e8', shade: '#9bb8cd' },
+// Hero color schemes. Variant names kept for buddy-storage compat
+// (classic / warm / blue) — the colors are now ocean-hero palettes.
+const SHARK_TONES = {
+  // Default: deep-sea blue hero.
+  classic: { skin: '#3a7ec0', shade: '#22568f', belly: '#dfeefb' },
+  // Warm = lava shark (red/orange hero).
+  warm:    { skin: '#d2563a', shade: '#9c3a26', belly: '#ffe4d6' },
+  // Blue = ice shark (cyan/teal hero).
+  blue:    { skin: '#4cc8d2', shade: '#2a8a93', belly: '#dffaff' },
 };
 
 export function buildKoala({ variant = 'classic', size = 'medium', accessory = null } = {}) {
-  const tone = FUR_TONES[variant] || FUR_TONES.classic;
+  const tone = SHARK_TONES[variant] || SHARK_TONES.classic;
   const svg = document.createElementNS(SVG_NS, 'svg');
   svg.setAttribute('viewBox', '0 0 200 220');
   svg.setAttribute('xmlns', SVG_NS);
@@ -24,88 +40,119 @@ export function buildKoala({ variant = 'classic', size = 'medium', accessory = n
   svg.dataset.variant = variant;
 
   svg.innerHTML = `
-    <!-- ears (drawn first so head overlaps) -->
+    <!-- Cape behind the body — always rendered for the hero silhouette.
+         Color scales with the variant. -->
+    <g class="cape">
+      <path d="M 50 90 Q 30 160 60 210 Q 100 188 140 210 Q 170 160 150 90 Q 100 100 50 90 Z"
+            fill="#c8242a" stroke="#1a1a1a" stroke-width="2.5" stroke-linejoin="round" />
+      <path d="M 60 95 Q 50 150 80 200 Q 100 188 120 200 Q 150 150 140 95 Q 100 105 60 95 Z"
+            fill="url(#g-shade)" opacity="0.65" />
+      <!-- Cape collar / clasp -->
+      <rect x="84" y="88" width="32" height="6" rx="2" fill="#ffd23f" stroke="#1a1a1a" stroke-width="1.5" />
+      <circle cx="100" cy="91" r="3" fill="#ef3e3e" stroke="#1a1a1a" stroke-width="1" />
+    </g>
+
+    <!-- Top fins (the "ears" anchor points so animator's idle-ear-twitch
+         applies). These read as a dorsal-fin crest on top of the head. -->
     <g id="left-ear" class="left-ear">
-      <ellipse cx="48" cy="68" rx="34" ry="32" fill="${tone.fur}" />
-      <ellipse cx="48" cy="74" rx="22" ry="20" fill="#f7d7d7" />
-      <ellipse cx="48" cy="74" rx="14" ry="12" fill="#ffeaea" />
+      <path d="M 56 56 L 76 18 L 86 60 Z" fill="${tone.shade}" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round" />
+      <path d="M 60 56 L 76 26 L 80 56 Z" fill="${tone.skin}" />
     </g>
     <g id="right-ear" class="right-ear">
-      <ellipse cx="152" cy="68" rx="34" ry="32" fill="${tone.fur}" />
-      <ellipse cx="152" cy="74" rx="22" ry="20" fill="#f7d7d7" />
-      <ellipse cx="152" cy="74" rx="14" ry="12" fill="#ffeaea" />
+      <path d="M 144 56 L 124 18 L 114 60 Z" fill="${tone.shade}" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round" />
+      <path d="M 140 56 L 124 26 L 120 56 Z" fill="${tone.skin}" />
     </g>
 
-    <!-- legs (behind body) -->
+    <!-- Tail flukes (animator's left-leg / right-leg anchors). Visually
+         these are the shark tail spread wide at the bottom. -->
     <g id="left-leg" class="left-leg">
-      <ellipse cx="72" cy="200" rx="22" ry="14" fill="${tone.shade}" />
+      <path d="M 60 196 L 32 214 L 68 208 Z" fill="${tone.shade}" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round" />
     </g>
     <g id="right-leg" class="right-leg">
-      <ellipse cx="128" cy="200" rx="22" ry="14" fill="${tone.shade}" />
+      <path d="M 140 196 L 168 214 L 132 208 Z" fill="${tone.shade}" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round" />
     </g>
 
-    <!-- body — base fur + painterly highlight + shade overlay for depth -->
+    <!-- Body — torpedo-shaped trunk with painterly highlight + shade -->
     <g id="body" class="body">
-      <ellipse cx="100" cy="160" rx="62" ry="55" fill="${tone.fur}" />
-      <ellipse cx="100" cy="160" rx="62" ry="55" fill="url(#g-shade)" />
-      <ellipse cx="84"  cy="138" rx="40" ry="22" fill="url(#g-highlight)" />
-      <ellipse id="belly" class="belly" cx="100" cy="170" rx="42" ry="38" fill="var(--c-koala-belly)" />
-      <ellipse cx="100" cy="170" rx="42" ry="38" fill="url(#g-shade)" opacity="0.7" />
-      <ellipse cx="86"  cy="152" rx="22" ry="14" fill="url(#g-highlight)" opacity="0.7" />
+      <ellipse cx="100" cy="160" rx="58" ry="48" fill="${tone.skin}" stroke="#1a1a1a" stroke-width="2.5" />
+      <ellipse cx="100" cy="160" rx="58" ry="48" fill="url(#g-shade)" />
+      <ellipse cx="84"  cy="138" rx="36" ry="20" fill="url(#g-highlight)" />
+      <!-- Lighter underbelly disc -->
+      <ellipse id="belly" class="belly" cx="100" cy="172" rx="42" ry="32" fill="${tone.belly}" />
+      <ellipse cx="100" cy="172" rx="42" ry="32" fill="url(#g-shade)" opacity="0.5" />
+      <ellipse cx="86"  cy="156" rx="22" ry="12" fill="url(#g-highlight)" opacity="0.7" />
+      <!-- Hero emblem on chest: lightning bolt -->
+      <path d="M 96 152 L 108 152 L 102 162 L 110 162 L 96 180 L 100 168 L 92 168 Z"
+            fill="#ffd23f" stroke="#1a1a1a" stroke-width="1.5" stroke-linejoin="round" />
+      <!-- Gill slits along the side -->
+      <path d="M 56 158 q 4 -3 8 0" stroke="#1a1a1a" stroke-width="1.2" fill="none" />
+      <path d="M 56 168 q 4 -3 8 0" stroke="#1a1a1a" stroke-width="1.2" fill="none" />
+      <path d="M 56 178 q 4 -3 8 0" stroke="#1a1a1a" stroke-width="1.2" fill="none" />
     </g>
 
-    <!-- arms (over body) -->
+    <!-- Side fins (animator's left-arm / right-arm anchors). -->
     <g id="left-arm" class="left-arm">
-      <ellipse cx="44" cy="155" rx="18" ry="28" fill="${tone.shade}" transform="rotate(-15 44 155)" />
+      <path d="M 50 152 Q 22 168 30 196 Q 48 184 56 168 Z" fill="${tone.shade}" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round" />
+      <path d="M 48 156 Q 32 172 36 188 Q 48 178 54 168 Z" fill="${tone.skin}" />
     </g>
     <g id="right-arm" class="right-arm">
-      <ellipse cx="156" cy="155" rx="18" ry="28" fill="${tone.shade}" transform="rotate(15 156 155)" />
+      <path d="M 150 152 Q 178 168 170 196 Q 152 184 144 168 Z" fill="${tone.shade}" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round" />
+      <path d="M 152 156 Q 168 172 164 188 Q 152 178 146 168 Z" fill="${tone.skin}" />
     </g>
 
-    <!-- head -->
+    <!-- Head -->
     <g id="head" class="head">
-      <ellipse cx="100" cy="100" rx="62" ry="58" fill="${tone.fur}" />
-      <ellipse cx="100" cy="100" rx="62" ry="58" fill="url(#g-shade)" />
-      <ellipse cx="80"  cy="76"  rx="38" ry="22" fill="url(#g-highlight)" />
+      <ellipse cx="100" cy="100" rx="60" ry="54" fill="${tone.skin}" stroke="#1a1a1a" stroke-width="2.5" />
+      <ellipse cx="100" cy="100" rx="60" ry="54" fill="url(#g-shade)" />
+      <ellipse cx="80"  cy="76"  rx="36" ry="20" fill="url(#g-highlight)" />
 
-      <!-- eye whites -->
-      <ellipse class="eye-white" cx="78"  cy="98" rx="11" ry="13" fill="#ffffff" />
-      <ellipse class="eye-white" cx="122" cy="98" rx="11" ry="13" fill="#ffffff" />
+      <!-- Eye whites -->
+      <ellipse class="eye-white" cx="78"  cy="98" rx="11" ry="13" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5" />
+      <ellipse class="eye-white" cx="122" cy="98" rx="11" ry="13" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5" />
 
-      <!-- pupils (animator nudges cx/cy to track cursor) -->
+      <!-- Pupils -->
       <g id="left-eye"  class="left-eye"><circle class="pupil" cx="78"  cy="100" r="5" fill="#1a1a1a" /></g>
       <g id="right-eye" class="right-eye"><circle class="pupil" cx="122" cy="100" r="5" fill="#1a1a1a" /></g>
 
-      <!-- eyelids — scaleY 0 by default, blink animation expands to 1 -->
-      <g id="left-eyelid"  class="left-eyelid"><ellipse cx="78"  cy="98" rx="11" ry="13" fill="${tone.fur}" /></g>
-      <g id="right-eyelid" class="right-eyelid"><ellipse cx="122" cy="98" rx="11" ry="13" fill="${tone.fur}" /></g>
+      <!-- Eyelids — collapsed by default, animator scales for blink -->
+      <g id="left-eyelid"  class="left-eyelid"><ellipse cx="78"  cy="98" rx="11" ry="13" fill="${tone.skin}" /></g>
+      <g id="right-eyelid" class="right-eyelid"><ellipse cx="122" cy="98" rx="11" ry="13" fill="${tone.skin}" /></g>
 
-      <!-- cheeks -->
-      <g id="left-cheek"  class="left-cheek"><circle cx="68"  cy="118" r="8" fill="var(--c-cheek)" opacity="0.55" /></g>
-      <g id="right-cheek" class="right-cheek"><circle cx="132" cy="118" r="8" fill="var(--c-cheek)" opacity="0.55" /></g>
+      <!-- Cheeks — heroic blush -->
+      <g id="left-cheek"  class="left-cheek"><circle cx="68"  cy="118" r="7" fill="var(--c-cheek)" opacity="0.55" /></g>
+      <g id="right-cheek" class="right-cheek"><circle cx="132" cy="118" r="7" fill="var(--c-cheek)" opacity="0.55" /></g>
 
-      <!-- big koala nose -->
+      <!-- Nose / snout tip with two nostril dots -->
       <g id="nose" class="nose">
-        <ellipse cx="100" cy="120" rx="20" ry="16" fill="#1a1a1a" />
-        <ellipse cx="93" cy="115" rx="4" ry="3" fill="#ffffff" opacity="0.6" />
+        <ellipse cx="100" cy="118" rx="14" ry="8" fill="${tone.shade}" />
+        <circle cx="94"  cy="118" r="1.5" fill="#1a1a1a" />
+        <circle cx="106" cy="118" r="1.5" fill="#1a1a1a" />
       </g>
 
-      <!-- mouth — closed-smile + open-mouth, animator toggles via .is-talking -->
+      <!-- Mouth — confident closed smile + open mouth with sharp teeth -->
       <g id="mouth" class="mouth">
-        <path class="mouth-closed" d="M 88 138 Q 100 148 112 138" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round" />
-        <path class="mouth-open"   d="M 88 138 Q 100 156 112 138 Q 100 148 88 138 Z" fill="#7a2828" stroke="#1a1a1a" stroke-width="2" />
+        <path class="mouth-closed" d="M 84 138 Q 100 148 116 138" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round" />
+        <g class="mouth-open">
+          <path d="M 84 138 Q 100 156 116 138 Q 100 148 84 138 Z" fill="#7a2828" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round" />
+          <!-- triangular teeth row -->
+          <path d="M 86 140 l 4 6 l 4 -6 l 4 6 l 4 -6 l 4 6 l 4 -6 l 4 6 l 4 -6 z" fill="#ffffff" stroke="#1a1a1a" stroke-width="0.8" />
+        </g>
       </g>
 
       ${accessory === 'leaf' ? `
+        <!-- Sidekick badge: a glowing fin emblem. (legacy id "leaf") -->
         <g class="accessory leaf">
-          <path d="M 60 50 Q 78 30 96 48 Q 80 56 60 50 Z" fill="#6dbf6a" />
-          <line x1="62" y1="49" x2="92" y2="50" stroke="#3f7e3d" stroke-width="1.5" />
+          <path d="M 64 50 L 100 30 L 136 50 L 100 60 Z" fill="#ffd23f" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round" />
+          <circle cx="100" cy="46" r="4" fill="#ef3e3e" stroke="#1a1a1a" stroke-width="1.5" />
         </g>
       ` : ''}
       ${accessory === 'hat' ? `
+        <!-- Domino mask. (legacy id "hat") -->
         <g class="accessory hat">
-          <ellipse cx="100" cy="50" rx="42" ry="8" fill="#d23b3b" />
-          <path d="M 70 50 Q 100 -2 130 50 Z" fill="#d23b3b" />
+          <path d="M 56 88 Q 60 78 76 78 L 124 78 Q 140 78 144 88 Q 130 96 100 96 Q 70 96 56 88 Z"
+                fill="#1a1a1a" stroke="#000" stroke-width="1.5" />
+          <ellipse cx="78"  cy="88" rx="8" ry="5" fill="#ffd23f" />
+          <ellipse cx="122" cy="88" rx="8" ry="5" fill="#ffd23f" />
         </g>
       ` : ''}
       ${accessory === 'crown' ? `
@@ -117,26 +164,27 @@ export function buildKoala({ variant = 'classic', size = 'medium', accessory = n
         </g>
       ` : ''}
       ${accessory === 'glasses' ? `
+        <!-- Scuba goggles. -->
         <g class="accessory glasses">
-          <circle cx="78"  cy="100" r="14" fill="none" stroke="#1a1a1a" stroke-width="3" />
-          <circle cx="122" cy="100" r="14" fill="none" stroke="#1a1a1a" stroke-width="3" />
+          <circle cx="78"  cy="100" r="14" fill="rgba(127,198,255,0.35)" stroke="#1a1a1a" stroke-width="3" />
+          <circle cx="122" cy="100" r="14" fill="rgba(127,198,255,0.35)" stroke="#1a1a1a" stroke-width="3" />
           <line x1="92" y1="100" x2="108" y2="100" stroke="#1a1a1a" stroke-width="3" />
+          <path d="M 64 100 Q 50 100 50 110" stroke="#1a1a1a" stroke-width="3" fill="none" />
+          <path d="M 136 100 Q 150 100 150 110" stroke="#1a1a1a" stroke-width="3" fill="none" />
         </g>
       ` : ''}
       ${accessory === 'scarf' ? `
+        <!-- Hero utility belt + sash. (legacy id "scarf") -->
         <g class="accessory scarf">
-          <path d="M 56 152 Q 100 168 144 152 Q 144 168 100 174 Q 56 168 56 152 Z" fill="#a672ff" />
-          <path d="M 132 168 L 152 200 L 138 200 Z" fill="#7b4dd0" />
+          <rect x="56" y="186" width="88" height="10" fill="#1a1a1a" />
+          <rect x="92" y="184" width="16" height="14" rx="2" fill="#ffd23f" stroke="#1a1a1a" stroke-width="1.5" />
         </g>
       ` : ''}
       ${accessory === 'flower' ? `
+        <!-- Starfish badge. (legacy id "flower") -->
         <g class="accessory flower">
-          <circle cx="58" cy="58" r="6" fill="#ff77b1" />
-          <circle cx="64" cy="50" r="6" fill="#ff77b1" />
-          <circle cx="74" cy="54" r="6" fill="#ff77b1" />
-          <circle cx="70" cy="64" r="6" fill="#ff77b1" />
-          <circle cx="60" cy="68" r="6" fill="#ff77b1" />
-          <circle cx="66" cy="58" r="3" fill="#ffd23f" />
+          <path d="M 60 56 L 64 46 L 68 56 L 78 58 L 70 64 L 72 74 L 64 68 L 56 74 L 58 64 L 50 58 Z" fill="#ff8a3d" stroke="#1a1a1a" stroke-width="1.5" stroke-linejoin="round" />
+          <circle cx="64" cy="60" r="2" fill="#ffd23f" />
         </g>
       ` : ''}
     </g>

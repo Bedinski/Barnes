@@ -37,8 +37,18 @@ export const ALL_WORDS = [...KINDERGARTEN, ...FIRST_GRADE];
 export const ALL_SIGHT_WORDS = [...PRE_K, ...KINDERGARTEN, ...FIRST_GRADE];
 
 // Decodable nouns that may appear in sentences in addition to sight words.
-// Each noun must have either a scene illustration or a generic icon.
+// The first cluster ("panda" / "koala" / "tree" / etc.) is preserved
+// for backward compat — the underlying sceneIds and tests still
+// reference these legacy names. The second cluster is the new
+// sea-hero vocabulary. A 7-year-old sees sentences about sharks /
+// octopuses / coral / treasure that match the new visual world.
 export const ALLOWED_NOUNS = [
+  // Legacy (sceneId / test compat)
   'panda', 'pandas', 'koala', 'koalas', 'bamboo', 'tree', 'sun', 'log',
   'ball', 'hat', 'leaf', 'leaves', 'sky', 'grass',
+  // Sea-hero theme
+  'shark', 'sharks', 'octopus', 'octopuses',
+  'fish', 'kelp', 'reef', 'coral', 'sea', 'wave', 'waves',
+  'pearl', 'pearls', 'treasure', 'chest', 'bubble', 'bubbles',
+  'mask', 'cape',
 ];

@@ -11,11 +11,11 @@
 // punitive, especially when the easy books are quick to outgrow.
 
 import { BOOKS } from '../data/books.js';
-import { buildKoala } from '../characters/koala.js?v=4';
-import { buildPanda } from '../characters/panda.js?v=4';
+import { buildKoala } from '../characters/koala.js?v=5';
+import { buildPanda } from '../characters/panda.js?v=5';
 import { attach as animate } from '../characters/animator.js';
 import { buildStarCounter } from '../components/stars.js';
-import { BuddyCorner } from '../components/buddy.js?v=4';
+import { BuddyCorner } from '../components/buddy.js?v=5';
 import { speak } from '../audio/speech.js';
 import { tap as tapSound } from '../audio/sounds.js';
 
